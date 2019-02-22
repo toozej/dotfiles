@@ -1,7 +1,11 @@
 #!/bin/bash
 
+# symlink files from within ./common into their correct places within ~/
 echo -e "installing common dotfiles\n"
-# symlink files from within dotfiles/common into their correct places within ~/
+for item in ./common
+do
+    ln -snf $item ~
+done
 
 # clone and install vimfiles
 echo -e "installing vimfiles\n"
@@ -11,16 +15,19 @@ vim +PlugInstall +qall
 
 echo -e "determining OS and distro, then installing related dotfiles\n"
 if [ "$(uname)" == "Darwin" ]; then
-    # symlink files from within ./mac/ to their correct location
-
     # ensure .oh-my-zsh is installed
-
-    # symlink ./mac/.oh-my-zsh/custom/themes/agnoster.zsh-theme to ~/.oh-my-zsh/.custom/themes/agnoster.zsh-theme
+    if [[ ! -d "~/.oh-my-zsh" ]]; then
+        sh -c "$(curl -fsSL https://raw.githubusercontent.com/robbyrussell/oh-my-zsh/master/tools/install.sh)"
+    fi
+    
+    # symlink files from within ./mac/ to their correct location
+    echo -e "installing dotfiles for MacOS"
+    for item in ./mac
+    do
+        ln -snf $item ~
+    done
 
 elif [ "$(expr substr $(uname -s) 1 5)" == "Linux" ]; then
-    # Do something under GNU/Linux platform
- 
-
     # if running Gnome
     if [ "$(which gnome-shell)" == "/usr/bin/gnome-shell" ]; then
         echo -e "installing dotfiles for Gnome"
@@ -30,16 +37,20 @@ elif [ "$(expr substr $(uname -s) 1 5)" == "Linux" ]; then
     # if running i3-wm
     elif [ "$(which i3)" == "/usr/bin/i3" ]; then
         echo -e "installing dotfiles for i3-wm"
-        # symlink files from within dotfiles/gui/i3
+        for item in ./gui/i3
+        do
+            ln -snf $item ~
+        done
     fi
 
     if [ "$(which gvim)" == "/usr/bin/vim.gtk3"] || [ "$(which gvim)" == "/usr/bin/vim.gnome" ]; then
         echo -e "installing dotfiles for gvim"
-        # symlink files from dotfiles/gui/.gvimrc to ~/.gvimrc
+        ln -sf ./gui/.gvimrc ~/.gvimrc
+    fi
 fi
 
 
 # reminders
-echo -e "Don't forget to set secret things like in the following files:\n"
+echo -e "Don't forget to set secret things in the following files:\n"
 echo -e "dotfiles/common/.gitconfig\n"
 echo -e "~/.ssh/config\n"
