@@ -1,0 +1,19 @@
+# Docker
+alias dockerps="docker ps --format '{{.ID}} - {{.Names}} - {{.Status}} - {{.Image}}'"
+alias dockerrmexited="docker rm $(docker ps --all -q -f status=exited)"
+alias dockerrminotags="docker rmi $(docker images -a | grep "^<none>" | awk '{print $3}')"
+alias dockerrmidangling="docker rmi $(docker images -f "dangling=true" -q)"
+alias dockerrmiday="docker rmi $(docker images | grep " [months|days|weeks]* ago" | awk '{print $3}')"
+alias dockerrmiweek="docker rmi $(docker images | grep " [months|weeks]* ago" | awk '{print $3}')"
+alias dockerrmimonth="docker rmi $(docker images | grep " [months]* ago" | awk '{print $3}')"
+alias dockerrminotlatest="docker rmi $(docker images | grep -v "latest" | awk '{print $3}')"
+dockerstats() {
+	if [ $# -eq 0 ]
+		then docker stats --no-stream;
+		else docker stats --no-stream | grep $1;
+	fi
+}
+
+dockertop() {
+	docker stats --format "table {{.Container}}\t{{.Name}}\t{{.CPUPerc}} {{.MemPerc}}\t{{.NetIO}}\t{{.BlockIO}}"
+}

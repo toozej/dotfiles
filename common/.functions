@@ -1,0 +1,153 @@
+# github functions and aliases
+alias gs="git status"
+alias gom="git checkout master"
+
+function br(){
+	branch_name=$1
+    current_branch=`git rev-parse --abbrev-ref HEAD`
+	if [ $branch_name ]; then
+    	if [ $current_branch != 'master' ]; then
+			git checkout master
+		fi
+		git pull
+		git branch $branch_name
+		git checkout $branch_name
+	else
+		echo "No branch name specified, aborting"
+	fi
+}
+
+function gdf(){
+	filename=$1
+    comparison_branch=$2
+    current_branch=`git rev-parse --abbrev-ref HEAD`
+	if [ $filename ]; then
+        if [ $comparison_branch ]; then
+            git diff $current_branch..$comparison_branch -- $filename
+        else
+            git diff $current_branch..master -- $filename
+        fi
+	else
+        if [ $comparison_branch ]; then
+            git diff $current_branch..$comparison_branch
+        else
+            git diff $current_branch..master
+        fi
+	fi
+}
+
+
+function push(){
+    branch=`git rev-parse --abbrev-ref HEAD`
+    if [[ $branch == 'master' ]]; then
+        echo "DO NOT PUSH TO MASTER"
+    else
+        git push -u origin $branch
+    fi
+}
+
+function pushf(){
+    branch=`git rev-parse --abbrev-ref HEAD`
+    if [[ $branch == 'master' ]]; then
+        echo "DO NOT PUSH TO MASTER"
+    else
+        git push -u -f origin $branch
+    fi
+}
+
+function pr(){
+    remote=`git remote -v | grep origin | head -1 | awk '{ print $2 }' | sed 's/.*:\(.*\)*/\1/' | sed 's/\.git$//'`
+    branch=`git rev-parse --abbrev-ref HEAD`
+    open "https://github.com/$remote/compare/${1:-master}...$branch?expand=1"
+}
+
+
+# misc functions
+sssh() {
+    ssh -t $1 "screen -dR"
+}
+
+# create archives out of folders
+mktar() { tar cvf  "${1%%/}.tar"     "${1%%/}/"; }
+mktgz() { tar cvzf "${1%%/}.tar.gz"  "${1%%/}/"; }
+mktbz() { tar cvjf "${1%%/}.tar.bz2" "${1%%/}/"; }
+
+#extract archives
+extract () {
+    if [ -f $1 ] ; then
+        case $1 in
+            *.tar.bz2)   tar xvjf $1        ;;
+            *.tar.gz)    tar xvzf $1     ;;
+            *.bz2)       bunzip2 $1       ;;
+            *.rar)       unrar x $1     ;;
+            *.gz)        gunzip $1     ;;
+            *.tar)       tar xvf $1        ;;
+            *.tbz2)      tar xvjf $1      ;;
+            *.tgz)       tar xvzf $1       ;;
+            *.zip)       unzip $1     ;;
+            *.Z)         uncompress $1  ;;
+            *.7z)        7z x $1    ;;
+            *)           echo "'$1' cannot be extracted via >extract<" ;;
+        esac
+    else
+        echo "'$1' is not a valid file"
+    fi
+}
+
+#netinfo - shows network information for your system
+netinfo ()
+{
+echo "--------------- Network Information ---------------"
+/sbin/ifconfig | awk /'inet addr/ {print $2}'
+/sbin/ifconfig | awk /'Bcast/ {print $3}'
+/sbin/ifconfig | awk /'inet addr/ {print $4}'
+/sbin/ifconfig | awk /'HWaddr/ {print $4,$5}'
+myip=`lynx -dump -hiddenlinks=ignore -nolist http://checkip.dyndns.org:8245/ | sed '/^$/d; s/^[ ]*//g; s/[ ]*$//g' `
+echo "${myip}"
+echo "---------------------------------------------------"
+}
+
+# check if terminal supports 24-bit true colors
+# https://gist.github.com/XVilka/8346728
+truecolor() {
+	awk 'BEGIN{
+		s="/\\/\\/\\/\\/\\"; s=s s s s s s s s;
+		for (colnum = 0; colnum<77; colnum++) {
+			r = 255-(colnum*255/76);
+			g = (colnum*510/76);
+			b = (colnum*255/76);
+			if (g>255) g = 510-g;
+			printf "\033[48;2;%d;%d;%dm", r,g,b;
+			printf "\033[38;2;%d;%d;%dm", 255-r,255-g,255-b;
+			printf "%s\033[0m", substr(s,colnum+1,1);
+		}
+		printf "\n";
+	}'
+}
+
+function alertCmd() {
+	pid=$1
+	if ! [[ "$pid" =~ ^[0-9]+$ ]]; then
+        echo "\$1 must be the pid of the process you want to alert on completion"
+		exit 1
+	fi
+	echo "alerting via echo and system bell when $pid has exited"
+	(while kill -0 $pid; do sleep 1; done) && tput bel && echo "command completed"
+}
+
+function pingme() {
+    curl --silent --output /dev/null -X POST --data-urlencode \
+    'payload={"channel":"@toozej", "username":"PingBot", "text":"Your thing is done!", "icon_emoji":":poop:"}' \
+    https://hooks.slack.com/services/somelongurlgoeshere
+}
+
+# rough attempt at saving some disk space with large files which aren't used frequently, like .isos
+# recursively find all files ending in ".$2" at the $1 path, and compress them using 7z ultra settings.
+# if compression works successfully, delete the original file
+function compressfiletype() {
+    if [[ "$1" =~ ^(-h|--help)$ ]]; then
+        echo "example: compressfiletype ~/Software/ .iso"
+        exit 1
+    fi
+    find "$1" -name "*$2" -exec 7za a -t7z -m0=lzma -mx=9 -mfb=64 -md=32m -ms=on {}.7z {} \; -exec 7za t {}.7z \; -exec rm -rf {} \;
+}

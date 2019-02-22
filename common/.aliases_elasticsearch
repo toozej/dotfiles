@@ -1,0 +1,11 @@
+# ElasticSearch aliases
+alias shards='curl -s -XGET localhost:9200/_cat/shards?v'
+alias indices='curl -s -XGET localhost:9200/_cat/indices?v'
+alias r-indices-count='indices | grep red | wc -l'
+alias r-indices='indices | head -n 1 && indices | grep red'
+alias y-indices-count='indices | grep yellow | wc -l'
+alias y-indices='indices | head -n 1 && indices | grep yellow'
+alias ushards='curl -s -XGET localhost:9200/_cat/shards?v | grep -i unassigned'
+alias nodes='curl -s -XGET localhost:9200/_cat/nodes?v\&h=name,ip,heapPercent,load,diskAvail,uptime,version'
+alias health='curl -s -XGET localhost:9200/_cat/health?v'
+alias allocation='curl -s -XGET localhost:9200/_cat/allocation?v'

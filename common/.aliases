@@ -1,0 +1,25 @@
+alias ll='ls -lah --color=auto'
+alias sl='ls'
+alias lsl='ls -lah | less'
+alias lsg='ls -lah --color=auto | grep -i'
+alias :q="exit"
+alias c="clear"
+alias b="cd ../"
+alias cpp="rsync --partial --progress --append --rsh=ssh -r -h "
+alias mvp="rsync --partial --progress --append --rsh=ssh -r -h --remove-sent-files"
+alias sag="sudo apt "
+alias saguu="sudo apt update; sudo apt upgrade -y; sudo apt-get autoremove -y;"
+alias syu="sudo yum upgrade -y"
+alias syi="sudo yum install "
+alias sys="sudo yum search "
+alias usshfs="sudo umount sshfs"
+alias duh="du -h --max-depth=1 | sort -n"
+alias lst="find . -type d -print | sed -e 's;[^/]*/;|____;g;s;____|; |;g'"
+alias weather="curl http://wttr.in/portland"
+alias scratch="vim +startinsert ~/tmp/scratch"
+alias vimn='vim -u NONE'
+alias tacg='tac /var/log/syslog | grep -i'
+alias tg='tail -f /var/log/syslog | grep -i'
+alias whatismyip='dig +short myip.opendns.com @resolver1.opendns.com'
+alias ssht='ssh -At -t conman ssh -A'
+
