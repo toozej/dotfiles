@@ -1,10 +1,13 @@
 #!/bin/bash
 
+DIR="$( cd "$(dirname "${BASH_SOURCE[0]}" )" && pwd  )"
+
 # symlink files from within ./common into their correct places within ~/
 echo -e "installing common dotfiles\n"
-for item in ./common
+for item in `ls -a $DIR/common/`
 do
-    ln -snf $item ~
+    echo $item
+    ln -snf $DIR/common/$item ~
 done
 
 # clone and install vimfiles
@@ -19,12 +22,13 @@ if [ "$(uname)" == "Darwin" ]; then
     if [[ ! -d "~/.oh-my-zsh" ]]; then
         sh -c "$(curl -fsSL https://raw.githubusercontent.com/robbyrussell/oh-my-zsh/master/tools/install.sh)"
     fi
-    
+
     # symlink files from within ./mac/ to their correct location
     echo -e "installing dotfiles for MacOS"
-    for item in ./mac
+    for item in `ls -a $DIR/mac/`
     do
-        ln -snf $item ~
+        echo $item
+        ln -snf $DIR/mac/$item ~
     done
 
 elif [ "$(expr substr $(uname -s) 1 5)" == "Linux" ]; then
@@ -37,20 +41,21 @@ elif [ "$(expr substr $(uname -s) 1 5)" == "Linux" ]; then
     # if running i3-wm
     elif [ "$(which i3)" == "/usr/bin/i3" ]; then
         echo -e "installing dotfiles for i3-wm"
-        for item in ./gui/i3
+        for item in `ls -a $DIR/gui/i3`
         do
-            ln -snf $item ~
+            echo $item
+            ln -snf $DIR/gui/i3/$item ~
         done
     fi
 
-    if [ "$(which gvim)" == "/usr/bin/vim.gtk3"] || [ "$(which gvim)" == "/usr/bin/vim.gnome" ]; then
+    if [ "$(which gvim)" == "/usr/bin/vim.gtk3" ] || [ "$(which gvim)" == "/usr/bin/vim.gnome" ]; then
         echo -e "installing dotfiles for gvim"
-        ln -sf ./gui/.gvimrc ~/.gvimrc
+        ln -sf $DIR/gui/.gvimrc ~/.gvimrc
     fi
 fi
 
 
 # reminders
-echo -e "Don't forget to set secret things in the following files:\n"
-echo -e "dotfiles/common/.gitconfig\n"
+echo -e "\nDon't forget to set secret things in the following files:"
+echo "dotfiles/common/.gitconfig"
 echo -e "~/.ssh/config\n"
