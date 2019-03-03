@@ -1,0 +1,17 @@
+---
+sudo: required
+dist: xenial
+language: generic
+
+branches:
+  only:
+    - master
+
+script:
+  - chmod +x setup.sh && ./setup.sh
+  - echo "ensuring that symlinks for most important files are created"
+  - ls -a ~/.bashrc | grep .bashrc ||  exit 1
+  - ls -a ~/.vimrc | grep .vimrc ||  exit 1
+  - ls -a ~/.aliases | grep .aliases ||  exit 1
+  - ls -a ~/.functions | grep .functions || exit 1
+  - echo "if we got to this point the test has finished successfully, exiting." && exit 0
