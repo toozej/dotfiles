@@ -1,4 +1,4 @@
-# Docker
+# Docker aliases
 alias dockerps="docker ps --format '{{.ID}} - {{.Names}} - {{.Status}} - {{.Image}}'"
 alias dockerrmexited="docker rm $(docker ps --all -q -f status=exited)"
 alias dockerrminotags="docker rmi $(docker images -a | grep "^<none>" | awk '{print $3}')"
@@ -7,6 +7,9 @@ alias dockerrmiday="docker rmi $(docker images | grep " [months|days|weeks]* ago
 alias dockerrmiweek="docker rmi $(docker images | grep " [months|weeks]* ago" | awk '{print $3}')"
 alias dockerrmimonth="docker rmi $(docker images | grep " [months]* ago" | awk '{print $3}')"
 alias dockerrminotlatest="docker rmi $(docker images | grep -v "latest" | awk '{print $3}')"
+alias ghreadmerender="docker run -it --rm -p 9000:8080 -v ${PWD}:/data -v ~/.grip:/.grip mbentley/grip --context=username/repo README.md 0.0.0.0:8080"
+
+# Docker functions
 dockerstats() {
 	if [ $# -eq 0 ]
 		then docker stats --no-stream;
