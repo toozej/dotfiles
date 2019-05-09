@@ -17,3 +17,6 @@ dockerstats() {
 dockertop() {
 	docker stats --format "table {{.Container}}\t{{.Name}}\t{{.CPUPerc}} {{.MemPerc}}\t{{.NetIO}}\t{{.BlockIO}}"
 }
+
+# kcli
+alias kcli='sudo docker run -it --rm --security-opt label:disable -v /home/james/.kcli:/root/.kcli -v /var/lib/libvirt/images:/var/lib/libvirt/images -v /var/run/libvirt:/var/run/libvirt -v $PWD:/workdir karmab/kcli'

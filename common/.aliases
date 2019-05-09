@@ -45,3 +45,11 @@ alias c="clear"
 alias duh="du -h --max-depth=1 | sort -n"
 alias weather="curl http://wttr.in/portland"
 
+## programming
+alias cdc="cd ~/src/github/toozej/ && ls"
+
+### git functions and aliases
+alias cleanbranches="git branch --merge | egrep -v '\''(^\*|master)'\'' | xargs git branch -d"
+alias gs="git status"
+alias gom="git checkout master"
+
