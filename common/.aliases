@@ -39,6 +39,9 @@ alias sys="sudo yum search "
 alias scratch="vim +startinsert ~/tmp/scratch"
 alias vimn='vim -u NONE'
 
+## git / programming
+alias cdc='cd ~/src/github/toozej/ && ls'
+
 ## misc
 alias :q="exit"
 alias c="clear"

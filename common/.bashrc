@@ -147,9 +147,19 @@ fi
 if [ -f ~/.functions ]; then
     . ~/.functions
 fi
-#if [ -f ~/.aliases_docker ]; then
-#    . ~/.aliases_docker
-#fi
+
+# docker-related/required aliases
+if [ "$(which docker)" == "/usr/bin/docker" ]; then
+    # source docker aliases
+    if [ -f ~/.aliases_docker ]; then
+        . ~/.aliases_docker
+    fi
+
+    # source kcli aliases
+    if [ -f ~/.aliases_kcli ]; then
+        . ~/.aliases_kcli
+    fi
+fi
 #if [ -f ~/.aliases_elasticsearch ]; then
 #    . ~/.aliases_elasticsearch
 #fi
