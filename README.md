@@ -8,4 +8,4 @@ I use them in two ways:
 
 Installation
 ============
-`git clone https://github.com/toozej/dotfiles ~ && ~/dotfiles/setup.sh`
+`git clone https://github.com/toozej/dotfiles && ~/dotfiles/setup.sh`
