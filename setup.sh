@@ -21,6 +21,10 @@ if [ "$(uname)" == "Darwin" ]; then
     # ensure .oh-my-zsh is installed
     if [[ ! -d "~/.oh-my-zsh" ]]; then
         sh -c "$(curl -fsSL https://raw.githubusercontent.com/robbyrussell/oh-my-zsh/master/tools/install.sh)"
+
+        # install powerline patched fonts for use in iTerm
+        sh -c "$(git clone https://github.com/powerline/fonts.git --depth=1 ~/dotfiles/mac/fonts/)"
+        sh -c "$(~/dotfiles/mac/fonts/install.sh && rm -rf ~/dotfiles/mac/fonts/)"
     fi
 
     # symlink oh-my-zsh theme in place
