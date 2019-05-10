@@ -23,6 +23,12 @@ if [ "$(uname)" == "Darwin" ]; then
         sh -c "$(curl -fsSL https://raw.githubusercontent.com/robbyrussell/oh-my-zsh/master/tools/install.sh)"
     fi
 
+    # symlink oh-my-zsh theme in place
+    ln -sf $DIR/mac/.oh-my-zsh/custom/themes/agnoster.zsh-theme ~/.oh-my-zsh/custom/themes/agnoster.zsh-theme
+
+    # symlink karabiner config
+    ln -sf $DIR/mac/.config/karabiner/karabiner.json ~/.config/karabiner/karabiner.json
+
     # symlink files from within ./mac/ to their correct location
     echo -e "installing dotfiles for MacOS"
     for item in `ls -a $DIR/mac/`
