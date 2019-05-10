@@ -25,6 +25,8 @@ if [ "$(uname)" == "Darwin" ]; then
 
     # symlink oh-my-zsh theme in place
     ln -sf $DIR/mac/.oh-my-zsh/custom/themes/agnoster.zsh-theme ~/.oh-my-zsh/custom/themes/agnoster.zsh-theme
+    # remove default .zshrc
+    rm -f ~/.zshrc
 
     # symlink karabiner config
     ln -sf $DIR/mac/.config/karabiner/karabiner.json ~/.config/karabiner/karabiner.json
