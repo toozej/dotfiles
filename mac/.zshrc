@@ -96,6 +96,14 @@ source $ZSH/oh-my-zsh.sh
 # source aliases and functions
 source $HOME/.aliases
 source $HOME/.functions
+source $HOME/.aliases_mac
+# docker-related/required aliases
+if [ "$(which docker)" == "/usr/bin/docker" ]; then
+    # source docker aliases
+    if [ -f ~/.aliases_docker ]; then
+        . ~/.aliases_docker
+    fi
+fi
 
 # Source chtf
 if [[ -f /usr/local/share/chtf/chtf.sh ]]; then

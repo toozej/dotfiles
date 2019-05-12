@@ -32,8 +32,8 @@ if [ "$(uname)" == "Darwin" ]; then
     # remove default .zshrc
     rm -f ~/.zshrc
 
-    # symlink karabiner config
-    ln -sf $DIR/mac/.config/karabiner/karabiner.json ~/.config/karabiner/karabiner.json
+    # copy karabiner config in place since the symlink gets overwritten when opening Karabiner-Elements 
+    cp $DIR/mac/.config/karabiner/karabiner.json ~/.config/karabiner/karabiner.json
 
     # symlink files from within ./mac/ to their correct location
     echo -e "installing dotfiles for MacOS"
