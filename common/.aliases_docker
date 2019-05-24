@@ -8,6 +8,7 @@ alias dockerrmiweek="docker rmi $(docker images | grep " [months|weeks]* ago" | 
 alias dockerrmimonth="docker rmi $(docker images | grep " [months]* ago" | awk '{print $3}')"
 alias dockerrminotlatest="docker rmi $(docker images | grep -v "latest" | awk '{print $3}')"
 alias ghreadmerender="docker run -it --rm -p 9000:8080 -v ${PWD}:/data -v ~/.grip:/.grip mbentley/grip --context=username/repo README.md 0.0.0.0:8080"
+alias dive="docker run --rm -it -v /var/run/docker.sock:/var/run/docker.sock wagoodman/dive:latest"
 
 # Docker functions
 dockerstats() {
