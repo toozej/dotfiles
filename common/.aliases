@@ -50,6 +50,7 @@ alias weather="curl http://wttr.in/portland"
 
 ## programming
 alias cdc="cd ~/src/github/toozej/ && ls"
+alias cdd="cd ~/src/healthsparq/ && ls"
 
 ### git functions and aliases
 alias cleanbranches="git branch --merge | egrep -v '\''(^\*|master)'\'' | xargs git branch -d"

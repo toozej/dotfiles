@@ -98,7 +98,7 @@ source $HOME/.aliases
 source $HOME/.functions
 source $HOME/.aliases_mac
 # docker-related/required aliases
-if [ "$(which docker)" == "/usr/bin/docker" ]; then
+if [[ -f "/usr/bin/docker" ]] || [[ -f "/usr/local/bin/docker" ]]; then
     # source docker aliases
     if [ -f ~/.aliases_docker ]; then
         . ~/.aliases_docker

@@ -23,7 +23,7 @@ if [ "$(uname)" == "Darwin" ]; then
         sh -c "$(curl -fsSL https://raw.githubusercontent.com/robbyrussell/oh-my-zsh/master/tools/install.sh)"
 
         # install powerline patched fonts for use in iTerm
-        sh -c "$(git clone https://github.com/powerline/fonts.git --depth=1 ~/dotfiles/mac/fonts/)"
+        sh -c "$(git clone https://github.com/powerline/fonts.git --depth=1 ~/dotfiles/mac/fonts)"
         sh -c "$(~/dotfiles/mac/fonts/install.sh && rm -rf ~/dotfiles/mac/fonts/)"
     fi
 
@@ -34,6 +34,9 @@ if [ "$(uname)" == "Darwin" ]; then
 
     # copy karabiner config in place since the symlink gets overwritten when opening Karabiner-Elements 
     cp $DIR/mac/.config/karabiner/karabiner.json ~/.config/karabiner/karabiner.json
+
+    # tell iTerm to use my default dynamic profile
+    ln -sf $DIR/mac/iterm_default_profile.json ~/Library/Application\ Support/iTerm2/DynamicProfiles/iterm_default_profile.json
 
     # symlink files from within ./mac/ to their correct location
     echo -e "installing dotfiles for MacOS"
