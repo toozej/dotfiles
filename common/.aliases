@@ -39,8 +39,9 @@ alias sys="sudo yum search "
 alias scratch="vim +startinsert ~/tmp/scratch"
 alias vimn='vim -u NONE'
 
-## git / programming
-alias cdc='cd ~/src/github/toozej/ && ls'
+## vagrant
+alias vdf="vagrant destroy -f"
+alias vdfu="vagrant destroy -f && vagrant up"
 
 ## misc
 alias :q="exit"
