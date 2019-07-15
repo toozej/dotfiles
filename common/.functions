@@ -147,3 +147,25 @@ function compressfiletype() {
     fi
     find "$1" -name "*$2" -exec 7za a -t7z -m0=lzma -mx=9 -mfb=64 -md=32m -ms=on {}.7z {} \; -exec 7za t {}.7z \; -exec rm -rf {} \;
 }
+
+# make an encrypted tgz from $1
+function mkenctar() {
+	FAILED=""
+   	tar -czf ${1}.tgz ${1}
+	if [ $? -ne 0 ]; then
+		FAILED="${FAILED} tarring ${1}\n"
+	fi
+
+    gpg --batch --yes --homedir /home/james/.gnupg --trust-model always --output ${1}.tgz.gpg --encrypt --recipient "james@toozej.com" ${1}.tgz
+	if [ $? -eq 0 ]; then
+		echo "encrypting ${1} completed successfully, removing unencrypted tar file ${1}.tgz"
+		shred ${1}.tgz && rm -f ${1}.tgz
+		if [ $? -ne 0 ]; then
+			FAILED="${FAILED} destroying ${1}.tgz, you should delete it manually.\n"
+		fi
+	else
+		FAILED="${FAILED} error encrypting ${1}.tgz\n"
+	fi
+
+	echo ${FAILED}
+}
