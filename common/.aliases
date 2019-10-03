@@ -22,7 +22,7 @@ alias mvp="rsync --partial --progress --append --rsh=ssh -r -h --remove-sent-fil
 ## network
 alias whatismyip='dig +short myip.opendns.com @resolver1.opendns.com'
 alias ssht='ssh -At -t conman ssh -A'
-alias usshfs="sudo umount sshfs"
+alias sship='ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa -l jtooze'
 
 ## syslog
 alias tacg='tac /var/log/syslog | grep -i'
@@ -42,6 +42,9 @@ alias vimn='vim -u NONE'
 ## vagrant
 alias vdf="vagrant destroy -f"
 alias vdfu="vagrant destroy -f && vagrant up"
+
+## terraform
+alias tf='terraform'
 
 ## misc
 alias :q="exit"
