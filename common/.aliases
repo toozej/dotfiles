@@ -22,7 +22,7 @@ alias mvp="rsync --partial --progress --append --rsh=ssh -r -h --remove-sent-fil
 ## network
 alias whatismyip='dig +short myip.opendns.com @resolver1.opendns.com'
 alias ssht='ssh -At -t conman ssh -A'
-alias sship='ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa -l jtooze'
+alias sship='ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa -l james'
 
 ## syslog
 alias tacg='tac /var/log/syslog | grep -i'
