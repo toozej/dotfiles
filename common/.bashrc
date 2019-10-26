@@ -24,7 +24,7 @@ shopt -s histappend                      # append to history, don't overwrite it
 # Does magic that makes Ctrl+S cycle forwards through history.
 stty -ixon
 # include timestamp in shell history
-export HISTTIMEFORMAT="%y%m%d %T "
+export HISTTIMEFORMAT="%Y-%m-%d %T "
 
 # Change the window title of X terminals 
 case ${TERM} in
