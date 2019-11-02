@@ -169,3 +169,11 @@ function mkenctar() {
 
 	echo ${FAILED}
 }
+
+# clone all repos from github.com/toozej into cwd
+function githubclonetoozej() {
+    if [ -n "${1}" ]; then
+        GITHUB_CLONE_TOOZEJ_TOKEN="${1}"
+    fi
+    curl -s https://${GITHUB_CLONE_TOOZEJ_TOKEN}:@api.github.com/users/toozej/repos\?per_page\=200 | jq ".[].ssh_url" | xargs -n 1 git clone --recursive
+}
