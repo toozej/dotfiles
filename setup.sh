@@ -74,5 +74,4 @@ fi
 
 # reminders
 echo -e "\nDon't forget to set secret things in the following files:"
-echo "dotfiles/common/.gitconfig"
 echo -e "~/.ssh/config\n"

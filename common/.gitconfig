@@ -1,7 +1,7 @@
 [user]
 	name = James Tooze
 	email = toozej@gmail.com
-    signingkey = 676B55E7B4896375
+    signingkey = 6EF0A7E0E50C0A9CD402B878676B55E7B4896375
 [core]
 	editor = vim
 	autocrlf = input
