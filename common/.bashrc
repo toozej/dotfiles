@@ -116,7 +116,7 @@ if [[ ${EUID} -ne 0 ]] ; then
 		GPG_AGENT_INFO=`cat $HOME/.gpg-agent-info | cut -c 16-`
 	else
 		# No, gpg-agent not available; start gpg-agent
-		eval `gpg-agent --daemon --no-grab --write-env-file $HOME/.gpg-agent-info`
+		eval `gpg-agent --daemon --no-grab`
 	fi
 	export GPG_TTY=`tty`
 	export GPG_AGENT_INFO
