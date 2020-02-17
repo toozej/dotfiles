@@ -1,0 +1,11 @@
+function cdt() {
+    if [ -n $1 ]; then
+        if [[ -d ~/Documents/Ops/Tickets/$1 ]]; then
+            cd ~/Documents/Ops/Tickets/$1/ && ls;
+        else
+            mkdir ~/Documents/Ops/Tickets/$1 && cd ~/Documents/Ops/Tickets/$1/;
+        fi
+    else
+        cd ~/Documents/Ops/Tickets/ && ls;
+    fi
+}

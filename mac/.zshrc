@@ -96,6 +96,7 @@ source $ZSH/oh-my-zsh.sh
 # source aliases and functions
 source $HOME/.aliases
 source $HOME/.functions
+source $HOME/.functions_work
 source $HOME/.aliases_mac
 # docker-related/required aliases
 if [[ -f "/usr/bin/docker" ]] || [[ -f "/usr/local/bin/docker" ]]; then
