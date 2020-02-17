@@ -63,3 +63,4 @@ alias cleanbranches="git branch --merge | egrep -v '\''(^\*|master)'\'' | xargs 
 alias gs="git status"
 alias gmp="git checkout master && git pull"
 alias gd="git diff"
+alias gforce="git commit -a --amend --no-edit && git push --force"
