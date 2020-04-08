@@ -10,14 +10,6 @@ do
     ln -snf $DIR/common/$item ~
 done
 
-# symlink files from within ./bin into their correct places within /usr/local/bin/
-echo -e "installing bin files\n"
-for item in `ls -a $DIR/bin/`
-do
-    echo $item
-    ln -snf $DIR/bin/$item /usr/local/bin/
-done
-
 # clone and install vimfiles
 echo -e "installing vimfiles\n"
 git clone https://github.com/toozej/vimfiles.git ~/.vim
