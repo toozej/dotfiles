@@ -1,0 +1,50 @@
+#! /bin/bash
+usage() {
+  cat << _EOF_
+  Usage: $0 -c <count> [-s <size>]
+  -c <count> - Number of junk files to create
+  [ -s <size> - The size of junk files to create (valid values: KB, MB, GB)]
+_EOF_
+exit 1
+}
+if [ $# -eq 0 ]; then
+  usage
+fi
+
+while getopts ":c:s:" opt; do
+  case $opt in
+    c)
+      count=$OPTARG
+      ;;
+    s)
+      if [ $OPTARG == "KB" ]; then
+        blocksize=1
+        size=1000
+      elif [ $OPTARG == "MB" ]; then
+        blocksize=1024
+        size=1000
+      elif [ $OPTARG == "GB" ]; then
+        blocksize=4096
+        size=10000000
+      fi
+      ;;
+    \?)
+      echo "Invalid option: -$OPTARG"
+      usage
+      ;;
+    *)
+      usage
+      ;;
+  esac
+done
+
+if [[ -z "${size}" ]]; then
+    blocksize=1
+    size=1000
+    echo "no size override set in arguments, defaulting to KB"
+fi
+
+for n in $(seq 1 ${count}); do
+    echo "creating file: ${n}"
+    openssl enc -aes-256-ctr -pass pass:"$(dd if=/dev/urandom bs=128 count=1 2>/dev/null | base64)" -nosalt < /dev/zero 2>/dev/null | dd of=file$( printf %03d "$n" ).bin bs=${blocksize} count=$(( RANDOM + ${size} )) > /dev/null 2>&1
+done

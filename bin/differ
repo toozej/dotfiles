@@ -1,0 +1,9 @@
+#!/bin/bash
+
+input="${1}"
+while IFS= read -r line
+do
+  if ! grep -q "${line}" "${2}"; then
+        echo "${line}" >> ${3}
+  fi
+done < "${input}"
