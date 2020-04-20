@@ -61,6 +61,7 @@ alias cdt="cd ~/Documents/Ops/Tickets/ && ls"
 ### git functions and aliases
 alias cleanbranches="git branch --merge | egrep -v '\''(^\*|master)'\'' | xargs git branch -d"
 alias gs="git status"
-alias gmp="git checkout master && git pull"
+alias gcmp="git checkout master && git pull"
 alias gd="git diff"
 alias gforce="git commit -a --amend --no-edit && git push --force"
+alias gforcea="git add -A && git commit -a --amend --no-edit && git push --force"
