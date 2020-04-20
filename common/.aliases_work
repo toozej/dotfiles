@@ -1,0 +1,5 @@
+alias tf='terraform'
+alias sship='ssh -A -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa -l jtooze'
+alias sshcentos='ssh -A -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa -l centos'
+alias cdb="cd ~/src/bitbucket/ && ls"
+alias cdg="cd ~/src/github/ && ls"
