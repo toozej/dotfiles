@@ -39,6 +39,7 @@ alias sys="sudo yum search "
 alias scratch="vim +startinsert ~/tmp/scratch"
 alias vimn='vim -u NONE'
 alias vimy='vim -c "let g:ale_fix_on_save = 0"'
+alias vimp='vim -c "Goyo" -c "StartPresenting"'
 
 ## vagrant
 alias vdf="vagrant destroy -f"
