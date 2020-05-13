@@ -1,5 +1,5 @@
 # Git and Github functions
-function br(){
+function br() {
 	branch_name=$1
     current_branch=`git rev-parse --abbrev-ref HEAD`
 	if [ $branch_name ]; then
@@ -14,7 +14,7 @@ function br(){
 	fi
 }
 
-function gdf(){
+function gdf() {
 	filename=$1
     comparison_branch=$2
     current_branch=`git rev-parse --abbrev-ref HEAD`
@@ -33,7 +33,7 @@ function gdf(){
 	fi
 }
 
-function push(){
+function push() {
     branch=`git rev-parse --abbrev-ref HEAD`
     if [[ $branch == 'master' ]]; then
         echo "DO NOT PUSH TO MASTER"
@@ -42,7 +42,7 @@ function push(){
     fi
 }
 
-function pushf(){
+function pushf() {
     branch=`git rev-parse --abbrev-ref HEAD`
     if [[ $branch == 'master' ]]; then
         echo "DO NOT PUSH TO MASTER"
@@ -51,14 +51,31 @@ function pushf(){
     fi
 }
 
-function pr(){
+function pr() {
     remote=`git remote -v | grep origin | head -1 | awk '{ print $2 }' | sed 's/.*:\(.*\)*/\1/' | sed 's/\.git$//'`
     branch=`git rev-parse --abbrev-ref HEAD`
     open "https://github.com/$remote/compare/${1:-master}...$branch?expand=1"
 }
 
-function gpa(){
+function gpa() {
     for DIR in $(ls .); do cd ${DIR} && git pull && cd ../; done
+}
+
+function gcmpa() {
+    for DIR in $(ls .); do cd ${DIR} && git checkout master && git pull && cd ../; done
+}
+
+function rebase() {
+    branch_name=$1
+    if [ -z $branch_name ]; then
+        branch_name="master"
+    fi
+    current_branch=`git rev-parse --abbrev-ref HEAD`
+    git checkout $branch_name
+    git pull
+    git checkout $current_branch
+    git rebase -i $branch_name
+    git push --force
 }
 
 # clone all repos from github.com/toozej into cwd
@@ -200,5 +217,9 @@ function kccd() {
 
     kitchen destroy all -c
     kitchen create ${DISTROS} -c && kitchen converge ${DISTROS}
+    kitchen destroy all -c
+}
+
+function kda() {
     kitchen destroy all -c
 }
