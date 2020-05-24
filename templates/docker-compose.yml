@@ -1,0 +1,59 @@
+version: '3'
+services:
+  SERVICENAME:
+    image: SERVICENAME:latest
+    container_name: "SERVICENAME"
+    restart: always
+    depends_on:
+      - SERVICENAME_mariadb
+      - SERVICENAME_pgsql
+    ports:
+      - "9000:8080"
+    labels:
+      - "traefik.docker.network=traefik"
+      - "traefik.http.routers.SERVICENAME.entrypoints=http"
+      - "traefik.http.routers.SERVICENAME.rule=Host(`SERVICENAME.example.com`)"
+      - "traefik.http.routers.SERVICENAME.middlewares=http-redirect-https@file,headers@file"
+      - "traefik.http.routers.SERVICENAME-secure.entrypoints=https"
+      - "traefik.http.routers.SERVICENAME-secure.rule=Host(`SERVICENAME.example.com`)"
+      - "traefik.http.routers.SERVICENAME-secure.middlewares=headers@file"
+      - "traefik.http.routers.SERVICENAME-secure.tls=true"
+      - "com.centurylinklabs.watchtower.enable='true'"
+    networks:
+      - backend
+      - traefik
+    env_file:
+      - SERVICENAME.env
+  SERVICENAME_pgsql:
+    image: postgres:latest
+    container_name: SERVICENAME_pgsql
+    env_file:
+      - pgsql.env
+    volumes:
+      - ./pgsql:/var/lib/postgresql/data
+    labels:
+      - "traefik.enable=false"
+    networks:
+      - backend
+    restart: always
+  SERVICENAME_mariadb:
+    container_name: SERVICENAME_mariadb
+    image: mariadb:latest
+    ports:
+      - "3306:3306"
+    volumes:
+      - ./mariadb:/var/lib/mysql
+    env_file:
+      - mariadb.env
+    restart: always
+    labels:
+      - "traefik.enable=false"
+    networks:
+      - backend
+networks:
+  traefik:
+    external:
+      name: traefik
+  backend:
+    driver: bridge
+
