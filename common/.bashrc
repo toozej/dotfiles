@@ -160,6 +160,15 @@ if [ "$(which docker)" == "/usr/bin/docker" ]; then
         . ~/.aliases_kcli
     fi
 fi
+
+# pbcopy/pbpaste aliases for non-MacOS
+if [! $(command -v pbcopy) ]; then
+    if [ -f ~/.aliases_pbcopy ]; then
+        . ~/.aliases_pbcopy
+    fi
+fi
+
+# elasticsearch-related aliases
 #if [ -f ~/.aliases_elasticsearch ]; then
 #    . ~/.aliases_elasticsearch
 #fi

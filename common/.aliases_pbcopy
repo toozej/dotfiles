@@ -1,0 +1,2 @@
+alias pbcopy="tee ~/.clipboard > /dev/null"
+alias pbpaste="cat ~/.clipboard"
