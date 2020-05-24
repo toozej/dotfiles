@@ -18,12 +18,12 @@ do
     ln -snf $DIR/bin/$item ~/bin/
 done
 
-echo -e "installing local templates\n"
-mkdir ~/templates
-for item in `ls -a $DIR/templates/`
+echo -e "installing local Templates\n"
+mkdir ~/Templates
+for item in `ls -a $DIR/Templates/`
 do
     echo $item
-    ln -snf $DIR/templates/$item ~/templates/
+    ln -snf $DIR/Templates/$item ~/Templates/
 done
 
 # clone and install vimfiles
