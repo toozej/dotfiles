@@ -1,2 +1,3 @@
+# idea from https://twitter.com/calebhailey/status/1264303430828347392
 alias pbcopy="tee ~/.clipboard > /dev/null"
 alias pbpaste="cat ~/.clipboard"
