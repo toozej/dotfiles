@@ -162,7 +162,7 @@ if [ "$(which docker)" == "/usr/bin/docker" ]; then
 fi
 
 # pbcopy/pbpaste aliases for non-MacOS
-if [! $(command -v pbcopy) ]; then
+if [ ! $(command -v pbcopy) ]; then
     if [ -f ~/.aliases_pbcopy ]; then
         . ~/.aliases_pbcopy
     fi
