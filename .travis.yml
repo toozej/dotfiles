@@ -1,6 +1,6 @@
 ---
 sudo: required
-dist: xenial
+dist: bionic
 language: generic
 
 branches:
@@ -14,4 +14,6 @@ script:
   - ls -a ~/.vimrc | grep .vimrc ||  exit 1
   - ls -a ~/.aliases | grep .aliases ||  exit 1
   - ls -a ~/.functions | grep .functions || exit 1
+  - ls -a ~/bin/ | grep jfc || exit 1
+  - ls -a ~/Templates/ | grep docker-compose.yml || exit 1
   - echo "if we got to this point the test has finished successfully, exiting." && exit 0

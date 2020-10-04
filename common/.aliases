@@ -38,6 +38,8 @@ alias sys="sudo yum search "
 ## vim
 alias scratch="vim +startinsert ~/tmp/scratch"
 alias vimn='vim -u NONE'
+alias vimy='vim -c "let g:ale_fix_on_save = 0"'
+alias vimp='vim -c "Goyo" -c "StartPresenting"'
 
 ## vagrant
 alias vdf="vagrant destroy -f"
@@ -55,8 +57,6 @@ alias dropboxstatus="sudo docker exec -it dropbox /bin/bash -c \"dropbox status\
 
 ## programming
 alias cdc="cd ~/src/github/toozej/ && ls"
-alias cdd="cd ~/src/healthsparq/ && ls"
-alias cdt="cd ~/Documents/Ops/Tickets/ && ls"
 
 ### git functions and aliases
 alias cleanbranches="git branch --merge | egrep -v '\''(^\*|master)'\'' | xargs git branch -d"

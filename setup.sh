@@ -10,6 +10,22 @@ do
     ln -snf $DIR/common/$item ~
 done
 
+echo -e "installing local binaries\n"
+mkdir ~/bin
+for item in `ls -a $DIR/bin/`
+do
+    echo $item
+    ln -snf $DIR/bin/$item ~/bin/
+done
+
+echo -e "installing local Templates\n"
+mkdir ~/Templates
+for item in `ls -a $DIR/Templates/`
+do
+    echo $item
+    ln -snf $DIR/Templates/$item ~/Templates/
+done
+
 # clone and install vimfiles
 echo -e "installing vimfiles\n"
 git clone https://github.com/toozej/vimfiles.git ~/.vim
@@ -49,14 +65,8 @@ if [ "$(uname)" == "Darwin" ]; then
     done
 
 elif [ "$(expr substr $(uname -s) 1 5)" == "Linux" ]; then
-    # if running Gnome
-    if [ "$(which gnome-shell)" == "/usr/bin/gnome-shell" ]; then
-        echo -e "installing dotfiles for Gnome"
-        # symlink files from within dotfiles/gui/gnome
-        dconf load /org/gnome/terminal/legacy/profiles:/ < ./gui/gnome/gnome-terminal-profiles.dconf
-
     # if running i3-wm
-    elif [ "$(which i3)" == "/usr/bin/i3" ]; then
+    if [ "$(which i3)" == "/usr/bin/i3" ]; then
         echo -e "installing dotfiles for i3-wm"
         for item in `ls -a $DIR/gui/i3`
         do

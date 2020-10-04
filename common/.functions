@@ -21,8 +21,8 @@ function br(){
     fi
 }
 
-function gdf(){
-    filename=$1
+function gdf() {
+	filename=$1
     comparison_branch=$2
     current_branch=`git rev-parse --abbrev-ref HEAD`
     default_branch=`git remote show origin | grep "HEAD branch" | sed 's/.*: //'`
@@ -41,7 +41,7 @@ function gdf(){
     fi
 }
 
-function push(){
+function push() {
     branch=`git rev-parse --abbrev-ref HEAD`
     default_branch=`git remote show origin | grep "HEAD branch" | sed 's/.*: //'`
     if [[ $branch == $default_branch ]]; then
@@ -51,7 +51,7 @@ function push(){
     fi
 }
 
-function pushf(){
+function pushf() {
     branch=`git rev-parse --abbrev-ref HEAD`
     default_branch=`git remote show origin | grep "HEAD branch" | sed 's/.*: //'`
     if [[ $branch == $default_branch ]]; then
@@ -68,10 +68,9 @@ function pr(){
     open "https://github.com/$remote/compare/${1:-$default_branch}...$branch?expand=1"
 }
 
-function gpa(){
+function gpa() {
     for DIR in $(ls .); do cd ${DIR} && git pull && cd ../; done
 }
-
 
 function gcmp(){
     default_branch=`git remote show origin | grep "HEAD branch" | sed 's/.*: //'`
@@ -102,7 +101,7 @@ function githubclonetoozej() {
     if [ -n "${1}" ]; then
         GITHUB_CLONE_TOOZEJ_TOKEN="${1}"
     fi
-    curl -s https://${GITHUB_CLONE_TOOZEJ_TOKEN}:@api.github.com/users/toozej/repos\?per_page\=200 | jq ".[].ssh_url" | xargs -n 1 git clone --recursive
+    curl -s https://${GITHUB_CLONE_TOOZEJ_TOKEN}:@api.github.com/users/toozej/repos\?per_page\=200 | jq -r '.[] | select(.archived == false)' | jq ".ssh_url" | xargs -n 1 git clone --recursive
 }
 
 
@@ -239,6 +238,6 @@ function kccd() {
     kitchen destroy all -c
 }
 
-function kda(){
+function kda() {
     kitchen destroy all -c
 }
