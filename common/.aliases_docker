@@ -1,5 +1,6 @@
 # Docker aliases
 alias dockerps="docker ps --format '{{.ID}} - {{.Names}} - {{.Status}} - {{.Image}}'"
+alias dockerrmall="docker stop $(docker ps -a -q); docker rm $(docker ps -a -q);"
 alias dockerrmexited="docker rm $(docker ps --all -q -f status=exited)"
 alias dockerrminotags="docker rmi $(docker images -a | grep "^<none>" | awk '{print $3}')"
 alias dockerrmidangling="docker rmi $(docker images -f "dangling=true" -q)"

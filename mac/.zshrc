@@ -9,6 +9,7 @@ launchctl setenv GOPATH $HOME/src/go
 
 # systemD settings
 export SYSTEMD_PAGER=''
+export AWS_PAGER=''
 
 # Set name of the theme to load.
 # Look in ~/.oh-my-zsh/themes/
@@ -63,14 +64,15 @@ HIST_STAMPS="mm/dd/yyyy"
 # Custom plugins may be added to ~/.oh-my-zsh/custom/plugins/
 # Example format: plugins=(rails git textmate ruby lighthouse)
 # Add wisely, as too many plugins slow down shell startup.
-plugins=(git fabric)
+plugins=(git aws ansible docker)
 
 # User configuration
 
-export PATH="/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin"
+export PATH="/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/Users/r634433/bin"
 # export MANPATH="/usr/local/man:$MANPATH"
 
 source $ZSH/oh-my-zsh.sh
+source /usr/local/share/zsh/site-functions/*
 
 # You may need to manually set your language environment
 # export LANG=en_US.UTF-8
@@ -99,15 +101,17 @@ source $HOME/.functions
 source $HOME/.functions_work
 source $HOME/.aliases_mac
 # docker-related/required aliases
-if [[ -f "/usr/bin/docker" ]] || [[ -f "/usr/local/bin/docker" ]]; then
-    # source docker aliases
-    if [ -f ~/.aliases_docker ]; then
-        . ~/.aliases_docker
-    fi
-fi
+#if [[ -f "/usr/bin/docker" ]] || [[ -f "/usr/local/bin/docker" ]]; then
+#    # source docker aliases
+#    if [ -f ~/.aliases_docker ]; then
+#        . ~/.aliases_docker
+#    fi
+#fi
 
 # Source chtf
 if [[ -f /usr/local/share/chtf/chtf.sh ]]; then
 	source "/usr/local/share/chtf/chtf.sh"
 fi
 
+# increase ulimit on weird macs
+ulimit -n 2048
