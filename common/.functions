@@ -1,42 +1,51 @@
 # Git and Github functions
+# determining default branch using https://stackoverflow.com/questions/28666357/git-how-to-get-default-branch/44750379#comment92366240_50056710
+
+function dbr(){
+    git remote show origin | grep "HEAD branch" | sed 's/.*: //'
+}
+
 function br(){
-	branch_name=$1
+    branch_name=$1
     current_branch=`git rev-parse --abbrev-ref HEAD`
-	if [ $branch_name ]; then
-    	if [ $current_branch != 'master' ]; then
-			git checkout master
-		fi
-		git pull
-		git branch $branch_name
-		git checkout $branch_name
-	else
-		echo "No branch name specified, aborting"
-	fi
+    default_branch=`git remote show origin | grep "HEAD branch" | sed 's/.*: //'`
+    if [ $branch_name ]; then
+        if [ $current_branch != $default_branch ]; then
+            git checkout $default_branch
+        fi
+        git pull
+        git branch $branch_name
+        git checkout $branch_name
+    else
+        echo "No branch name specified, aborting"
+    fi
 }
 
 function gdf(){
-	filename=$1
+    filename=$1
     comparison_branch=$2
     current_branch=`git rev-parse --abbrev-ref HEAD`
-	if [ $filename ]; then
+    default_branch=`git remote show origin | grep "HEAD branch" | sed 's/.*: //'`
+    if [ $filename ]; then
         if [ $comparison_branch ]; then
             git diff $current_branch..$comparison_branch -- $filename
         else
-            git diff $current_branch..master -- $filename
+            git diff $current_branch..$default_branch -- $filename
         fi
-	else
+    else
         if [ $comparison_branch ]; then
             git diff $current_branch..$comparison_branch
         else
-            git diff $current_branch..master
+            git diff $current_branch..$default_branch
         fi
-	fi
+    fi
 }
 
 function push(){
     branch=`git rev-parse --abbrev-ref HEAD`
-    if [[ $branch == 'master' ]]; then
-        echo "DO NOT PUSH TO MASTER"
+    default_branch=`git remote show origin | grep "HEAD branch" | sed 's/.*: //'`
+    if [[ $branch == $default_branch ]]; then
+        echo -e "DO NOT PUSH TO $default_branch"
     else
         git push -u origin $branch
     fi
@@ -44,21 +53,48 @@ function push(){
 
 function pushf(){
     branch=`git rev-parse --abbrev-ref HEAD`
-    if [[ $branch == 'master' ]]; then
-        echo "DO NOT PUSH TO MASTER"
+    default_branch=`git remote show origin | grep "HEAD branch" | sed 's/.*: //'`
+    if [[ $branch == $default_branch ]]; then
+        echo -e "DO NOT PUSH TO $default_branch"
     else
         git push -u -f origin $branch
     fi
 }
 
 function pr(){
+    default_branch=`git remote show origin | grep "HEAD branch" | sed 's/.*: //'`
     remote=`git remote -v | grep origin | head -1 | awk '{ print $2 }' | sed 's/.*:\(.*\)*/\1/' | sed 's/\.git$//'`
     branch=`git rev-parse --abbrev-ref HEAD`
-    open "https://github.com/$remote/compare/${1:-master}...$branch?expand=1"
+    open "https://github.com/$remote/compare/${1:-$default_branch}...$branch?expand=1"
 }
 
 function gpa(){
     for DIR in $(ls .); do cd ${DIR} && git pull && cd ../; done
+}
+
+
+function gcmp(){
+    default_branch=`git remote show origin | grep "HEAD branch" | sed 's/.*: //'`
+    git checkout $default_branch && git pull
+}
+
+function gcmpa(){
+    default_branch=`git remote show origin | grep "HEAD branch" | sed 's/.*: //'`
+    for DIR in $(ls .); do cd ${DIR} && git checkout $default_branch && git pull && cd ../; done
+}
+
+function rebase(){
+    branch_name=$1
+    default_branch=`git remote show origin | grep "HEAD branch" | sed 's/.*: //'`
+    if [ -z $branch_name ]; then
+        branch_name=$default_branch
+    fi
+    current_branch=`git rev-parse --abbrev-ref HEAD`
+    git checkout $branch_name
+    git pull
+    git checkout $current_branch
+    git rebase -i $branch_name
+    git push --force
 }
 
 # clone all repos from github.com/toozej into cwd
@@ -115,52 +151,52 @@ function compressfiletype() {
 
 # make an encrypted tgz from $1
 function mkenctar() {
-	FAILED=""
-   	tar -czf ${1}.tgz ${1}
-	if [ $? -ne 0 ]; then
-		FAILED="${FAILED} tarring ${1}\n"
-	fi
+    FAILED=""
+       tar -czf ${1}.tgz ${1}
+    if [ $? -ne 0 ]; then
+        FAILED="${FAILED} tarring ${1}\n"
+    fi
 
     gpg --batch --yes --homedir /home/james/.gnupg --trust-model always --output ${1}.tgz.gpg --encrypt --recipient "james@toozej.com" ${1}.tgz
-	if [ $? -eq 0 ]; then
-		echo "encrypting ${1} completed successfully, removing unencrypted tar file ${1}.tgz"
-		shred ${1}.tgz && rm -f ${1}.tgz
-		if [ $? -ne 0 ]; then
-			FAILED="${FAILED} destroying ${1}.tgz, you should delete it manually.\n"
-		fi
-	else
-		FAILED="${FAILED} error encrypting ${1}.tgz\n"
-	fi
+    if [ $? -eq 0 ]; then
+        echo "encrypting ${1} completed successfully, removing unencrypted tar file ${1}.tgz"
+        shred ${1}.tgz && rm -f ${1}.tgz
+        if [ $? -ne 0 ]; then
+            FAILED="${FAILED} destroying ${1}.tgz, you should delete it manually.\n"
+        fi
+    else
+        FAILED="${FAILED} error encrypting ${1}.tgz\n"
+    fi
 
-	echo ${FAILED}
+    echo ${FAILED}
 }
 
 # check if terminal supports 24-bit true colors
 # https://gist.github.com/XVilka/8346728
 truecolor() {
-	awk 'BEGIN{
-		s="/\\/\\/\\/\\/\\"; s=s s s s s s s s;
-		for (colnum = 0; colnum<77; colnum++) {
-			r = 255-(colnum*255/76);
-			g = (colnum*510/76);
-			b = (colnum*255/76);
-			if (g>255) g = 510-g;
-			printf "\033[48;2;%d;%d;%dm", r,g,b;
-			printf "\033[38;2;%d;%d;%dm", 255-r,255-g,255-b;
-			printf "%s\033[0m", substr(s,colnum+1,1);
-		}
-		printf "\n";
-	}'
+    awk 'BEGIN{
+        s="/\\/\\/\\/\\/\\"; s=s s s s s s s s;
+        for (colnum = 0; colnum<77; colnum++) {
+            r = 255-(colnum*255/76);
+            g = (colnum*510/76);
+            b = (colnum*255/76);
+            if (g>255) g = 510-g;
+            printf "\033[48;2;%d;%d;%dm", r,g,b;
+            printf "\033[38;2;%d;%d;%dm", 255-r,255-g,255-b;
+            printf "%s\033[0m", substr(s,colnum+1,1);
+        }
+        printf "\n";
+    }'
 }
 
 function alertme() {
-	pid=$1
-	if ! [[ "$pid" =~ ^[0-9]+$ ]]; then
+    pid=$1
+    if ! [[ "$pid" =~ ^[0-9]+$ ]]; then
         echo "\$1 must be the pid of the process you want to alert on completion"
-		exit 1
-	fi
-	echo "alerting via echo and system bell when $pid has exited"
-	(while kill -0 $pid; do sleep 1; done) && tput bel && echo "command completed"
+        exit 1
+    fi
+    echo "alerting via echo and system bell when $pid has exited"
+    (while kill -0 $pid; do sleep 1; done) && tput bel && echo "command completed"
 }
 
 function pingme() {
@@ -200,5 +236,9 @@ function kccd() {
 
     kitchen destroy all -c
     kitchen create ${DISTROS} -c && kitchen converge ${DISTROS}
+    kitchen destroy all -c
+}
+
+function kda(){
     kitchen destroy all -c
 }
