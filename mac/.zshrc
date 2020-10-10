@@ -100,6 +100,7 @@ source $HOME/.aliases
 source $HOME/.functions
 source $HOME/.functions_work
 source $HOME/.aliases_mac
+source $HOME/.aliases_work
 # docker-related/required aliases
 #if [[ -f "/usr/bin/docker" ]] || [[ -f "/usr/local/bin/docker" ]]; then
 #    # source docker aliases

@@ -78,8 +78,17 @@ function gcmp(){
 }
 
 function gcmpa(){
-    default_branch=`git remote show origin | grep "HEAD branch" | sed 's/.*: //'`
-    for DIR in $(ls .); do cd ${DIR} && git checkout $default_branch && git pull && cd ../; done
+    for DIR in $(find . -mindepth 2 -maxdepth 2 -type d -name ".git"); do
+        cd ${DIR}/..
+        current_branch=`git rev-parse --abbrev-ref HEAD`
+        default_branch=`git remote show origin | grep "HEAD branch" | sed 's/.*: //'`
+        if [ $current_branch == $default_branch ]; then
+            git checkout $default_branch && git pull
+        else
+            echo "skipping $DIR since default branch not currently checked out"
+        fi 
+        cd ../
+    done
 }
 
 function rebase(){
