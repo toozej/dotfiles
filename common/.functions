@@ -78,7 +78,8 @@ function gcmp(){
 }
 
 function gcmpa(){
-    for DIR in $(find . -mindepth 2 -maxdepth 2 -type d -name ".git"); do
+    starting_path=`pwd`
+    for DIR in $(find $starting_path -mindepth 2 -type d -name ".git"); do
         cd ${DIR}/..
         current_branch=`git rev-parse --abbrev-ref HEAD`
         default_branch=`git remote show origin | grep "HEAD branch" | sed 's/.*: //'`
@@ -87,7 +88,7 @@ function gcmpa(){
         else
             echo "skipping $DIR since default branch not currently checked out"
         fi 
-        cd ../
+        cd $starting_path
     done
 }
 

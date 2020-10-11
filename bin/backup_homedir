@@ -1,0 +1,84 @@
+#!/bin/bash
+
+# import functions for "gcmpa" usage later
+source ${HOME}/.functions
+
+FILES_TO_BACKUP=""
+ADDITIONAL_FILES_TO_BACKUP=$1
+DATE=$(date +"%m_%d_%Y")
+BACKUP_PATH=${HOME}
+TAR_FILE_NAME="backup_homedir_${DATE}.tgz"
+FAILED=""
+
+# read list of files to backup
+if [ -e ${HOME}/.backup_homedir_files ]; then
+    while IFS="" read -r f || [ -n "$f" ]
+    do
+        # ensure files requested to be backed up exist
+        if [ -e ${f} ]; then
+            # add them to the list to backup
+            FILES_TO_BACKUP="${FILES_TO_BACKUP} ${HOME}/${f}"
+        else
+            echo "${f} was requested to be backed up, but does not exist."
+        fi
+    done < ~/.backup_homedir_files
+else
+    echo "~/.backup_homedir_files not found, exiting"
+    exit 1
+fi
+
+# if a file of additional files to backup is passed as a CLI argument, append that to the list of files to backup
+if [ -e ${ADDITIONAL_FILES_TO_BACKUP} ]; then
+    while IFS="" read -r f || [ -n "$f" ]
+    do
+        # ensure files requested to be backed up exist
+        if [ -e ${f} ]; then
+            # add them to the list to backup
+            FILES_TO_BACKUP="${FILES_TO_BACKUP} ${HOME}/${f}"
+        else
+            echo "${f} was requested to be backed up, but does not exist."
+        fi
+    done < ${ADDITIONAL_FILES_TO_BACKUP}
+fi
+
+# if we're backing up ~/src,
+# pull all master and main branches first
+# leaving any repos currently checked out to non-default branches alone
+if [[ "${FILES_TO_BACKUP}" == *"src"* ]]; then
+    echo "~/src selected for backup"
+    echo "pulling all master and main branches"
+    cd ${HOME}/src
+    gcmpa
+    cd ${HOME}
+fi
+
+
+
+# create tar
+tar -cvzhf ${BACKUP_PATH}/${TAR_FILE_NAME} ${FILES_TO_BACKUP}
+if [ $? -ne 0 ]; then
+    FAILED="${FAILED} creating tar failed\n"
+    exit 2
+fi
+
+# encrypt tar
+gpg --batch --yes --homedir ${HOME}/.gnupg --trust-model always --output ${BACKUP_PATH}/${TAR_FILE_NAME}.gpg --encrypt --recipient "james@toozej.com" ${TAR_FILE_NAME}
+if [ $? -eq 0 ]; then
+    echo "encrypting ${TAR_FILE_NAME} completed successfully, removing unencrypted tar file"
+    shred ${TAR_FILE_NAME} && rm -f ${TAR_FILE_NAME}
+    if [ $? -ne 0 ]; then
+        FAILED="${FAILED} destroying ${TAR_FILE_NAME} failed\n"
+        exit 3
+    fi
+else
+    FAILED="${FAILED} encrypting tar failed\n"
+    exit 4
+fi
+
+if [ -n "${FAILED}" ]; then
+    echo "${FAILED}"
+    exit 5
+else
+    echo "backup_homedir completed successfully"
+fi
+
