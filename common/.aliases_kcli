@@ -1,2 +1,2 @@
-alias kcli='sudo docker run -it --rm --security-opt label:disable -v /home/james/.kcli:/root/.kcli -v /var/lib/libvirt/images:/var/lib/libvirt/images -v /var/run/libvirt:/var/run/libvirt -v $PWD:/workdir karmab/kcli'
-alias kcliw='sudo docker run -it --rm --security-opt label:disable -v /home/james/.kcli:/root/.kcli -v /var/lib/libvirt/images:/var/lib/libvirt/images -v /var/run/libvirt:/var/run/libvirt -v $PWD:/workdir -p 9000:9000 --entrypoint=/usr/bin/kweb karmab/kcli'
+alias kcli='sudo docker run -it --rm --security-opt label:disable -v /home/james/.kcli:/root/.kcli -v /var/lib/libvirt/images:/var/lib/libvirt/images -v /var/run/libvirt:/var/run/libvirt -v $PWD:/workdir quay.io/karmab/kcli'
+alias kcliw='sudo docker run -it --rm --security-opt label:disable -v /home/james/.kcli:/root/.kcli -v /var/lib/libvirt/images:/var/lib/libvirt/images -v /var/run/libvirt:/var/run/libvirt -v $PWD:/workdir -p 9000:9000 --entrypoint=/usr/bin/kweb quay.io/karmab/kcli'
