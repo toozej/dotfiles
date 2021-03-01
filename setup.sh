@@ -9,6 +9,8 @@ do
     echo $item
     ln -snf $DIR/common/$item ~
 done
+echo -e "setting correct permissions on ~/.gnupg\n"
+chmod go-rx ~/.gnupg/
 
 echo -e "installing local binaries\n"
 mkdir ~/bin
