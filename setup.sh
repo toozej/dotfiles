@@ -17,6 +17,7 @@ do
     echo $item
     ln -snf $DIR/bin/$item ~/bin/
 done
+curl https://raw.githubusercontent.com/toozej/git-peak-extended/main/git-peak-extended > ~/bin/git-peak-extended && chmod ug+x ~/bin/git-peak-extended
 
 echo -e "installing local Templates\n"
 mkdir ~/Templates
