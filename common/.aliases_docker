@@ -12,6 +12,14 @@ alias ghreadmerender="docker run -it --rm -p 9000:8080 -v ${PWD}:/data -v ~/.gri
 alias markserv="docker run -it --rm --name markserv -p 9000:3080 -v ${PWD}:/data thomsch98/markserv"
 alias dive="docker run --rm -it --name dive -v /var/run/docker.sock:/var/run/docker.sock wagoodman/dive:latest"
 
+# Docker Compose aliases
+alias dcd="sudo docker-compose down --remove-orphans"
+alias dcu="sudo docker-compose up -d"
+alias dcub="sudo docker-compose up -d --build"
+alias dcdu="sudo docker-compose down --remove-orphans && sudo docker-compose up -d"
+alias dcdub="sudo docker-compose down --remove-orphans && sudo docker-compose up -d --build"
+alias dca="sudo docker-compose down --remove-orphans && sudo docker-compose pull && sudo docker-compose up -d --build"
+
 # Docker functions
 dockerstats() {
 	if [ $# -eq 0 ]
