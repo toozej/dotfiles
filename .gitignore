@@ -1,1 +1,5 @@
 .DS_Store
+common/.gnupg/private-keys-v1.d/
+common/.gnupg/pubring.kbx
+common/.gnupg/pubring.kbx~
+common/.gnupg/trustdb.gpg
