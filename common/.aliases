@@ -58,10 +58,6 @@ alias dropboxstatus="sudo docker exec -it dropbox /bin/bash -c \"dropbox status\
 ## programming
 alias cdc="cd ~/src/github/toozej/ && ls"
 alias cdg="cd ~/src/github/ && ls"
-alias gp="EDITOR='code -n -w -a' $HOME/bin/git-peak-extended --temp"
-alias gpb="EDITOR='code -n -w -a' $HOME/bin/git-peak-extended --temp --branch"
-alias gps="EDITOR=vim $HOME/bin/git-peak-extended --save"
-alias gpsc="EDITOR='code -n -w -a' $HOME/bin/git-peak-extended --save"
 
 ### git functions and aliases
 alias cleanbranches="git branch --merge | egrep -v '\''(^\*|master)'\'' | xargs git branch -d"
