@@ -73,7 +73,13 @@ function pr(){
     default_branch=`git remote show origin | grep "HEAD branch" | sed 's/.*: //'`
     remote=`git remote -v | grep origin | head -1 | awk '{ print $2 }' | sed 's/.*:\(.*\)*/\1/' | sed 's/\.git$//'`
     branch=`git rev-parse --abbrev-ref HEAD`
-    open "https://github.com/$remote/compare/${1:-$default_branch}...$branch?expand=1"
+    os=`uname -s`
+    if [[ $os == "Linux" ]]; then
+        opener=xdg-open
+    elif [[ $os == "Darwin" ]]; then
+        opener=open
+    fi
+    $opener "https://github.com/$remote/compare/${1:-$default_branch}...$branch?expand=1"
 }
 
 function gpa() {
