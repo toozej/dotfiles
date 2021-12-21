@@ -47,6 +47,7 @@ alias vdfu="vagrant destroy -f && vagrant up"
 
 ## terraform
 alias tf='terraform'
+alias tg='terragrunt run-all'
 
 ## misc
 alias :q="exit"
