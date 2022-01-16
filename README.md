@@ -9,3 +9,8 @@ I use them in two ways:
 Installation
 ============
 `git clone https://github.com/toozej/dotfiles && ~/dotfiles/setup.sh`
+
+
+Resources Used
+==============
+- git-template for making main the default branch: https://medium.com/dataseries/how-to-make-your-git-repos-default-to-main-instead-of-master-28b7a9d3d631

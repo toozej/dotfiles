@@ -11,6 +11,8 @@ do
 done
 echo -e "setting correct permissions on ~/.gnupg\n"
 chmod go-rx ~/.gnupg/
+echo -e "enabling git-template dir\n"
+git config --global init.templateDir ~/.git-template
 
 echo -e "installing local binaries\n"
 mkdir ~/bin
