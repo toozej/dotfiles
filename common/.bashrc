@@ -7,8 +7,8 @@ PS1_art="$>"
 # outputting anything in those cases.
 
 if [[ $- != *i* ]] ; then
-	# Shell is non-interactive.  Be done now!
-	return
+    # Shell is non-interactive.  Be done now!
+    return
 fi
 
 # Bash won't get SIGWINCH if another process is in the foreground.
@@ -28,12 +28,12 @@ export HISTTIMEFORMAT="%Y-%m-%d %T "
 
 # Change the window title of X terminals 
 case ${TERM} in
-	xterm*|rxvt*|Eterm|aterm|kterm|gnome*|interix)
-		PROMPT_COMMAND='echo -ne "\033]0;${USER}@${HOSTNAME%%.*}:${PWD/$HOME/~}\007"'
-		;;
-	screen)
-		PROMPT_COMMAND='echo -ne "\033_${USER}@${HOSTNAME%%.*}:${PWD/$HOME/~}\033\\"'
-		;;
+    xterm*|rxvt*|Eterm|aterm|kterm|gnome*|interix)
+        PROMPT_COMMAND='echo -ne "\033]0;${USER}@${HOSTNAME%%.*}:${PWD/$HOME/~}\007"'
+        ;;
+    screen)
+        PROMPT_COMMAND='echo -ne "\033_${USER}@${HOSTNAME%%.*}:${PWD/$HOME/~}\033\\"'
+        ;;
 esac
 
 use_color=true
@@ -48,79 +48,83 @@ match_lhs=""
 [[ -f ~/.dir_colors   ]] && match_lhs="${match_lhs}$(<~/.dir_colors)"
 [[ -f /etc/DIR_COLORS ]] && match_lhs="${match_lhs}$(</etc/DIR_COLORS)"
 [[ -z ${match_lhs}    ]] \
-	&& type -P dircolors >/dev/null \
-	&& match_lhs=$(dircolors --print-database)
+    && type -P dircolors >/dev/null \
+    && match_lhs=$(dircolors --print-database)
 [[ $'\n'${match_lhs} == *$'\n'"TERM "${safe_term}* ]] && use_color=true
 
 if ${use_color} ; then
-	# Enable colors for ls, etc.  Prefer ~/.dir_colors #64489
-	if type -P dircolors >/dev/null ; then
-		if [[ -f ~/.dir_colors ]] ; then
-			eval $(dircolors -b ~/.dir_colors)
-		elif [[ -f /etc/DIR_COLORS ]] ; then
-			eval $(dircolors -b /etc/DIR_COLORS)
-		fi
-	fi
+    # Enable colors for ls, etc.  Prefer ~/.dir_colors #64489
+    if type -P dircolors >/dev/null ; then
+        if [[ -f ~/.dir_colors ]] ; then
+            eval $(dircolors -b ~/.dir_colors)
+        elif [[ -f /etc/DIR_COLORS ]] ; then
+            eval $(dircolors -b /etc/DIR_COLORS)
+        fi
+    fi
 
-	if [[ ${EUID} == 0 ]] ; then
-		PS1="\[\e[1;31m\]\u@\h\[\033[01;34m\] \W \\$ \[\033[00m\]\[\e[1;31m\] "
-	else
-		PS1="\[\033[01;32m\]\h\[\033[01;34m\] \t \w ${PS1_art}\[\033[00m\] "
+    if [[ ${EUID} == 0 ]] ; then
+        PS1="\[\e[1;31m\]\u@\h\[\033[01;34m\] \W \\$ \[\033[00m\]\[\e[1;31m\] "
+    else
+        # Source git-prompt script
+        if [ -f ~/.git-prompt.sh ]; then
+            source ~/.git-prompt.sh
+            export GIT_PS1_SHOWDIRTYSTATE=1
+        fi
+        PS1="\[\033[01;32m\]\h\[\033[01;34m\] \t \w\$(__git_ps1) ${PS1_art}\[\033[00m\] "
+    fi
 
-	fi
-
-	alias ls='ls --color=auto'
-	alias grep='grep --color=auto'
+    alias ls='ls --color=auto'
+    alias grep='grep --color=auto'
 else
-	if [[ ${EUID} == 0 ]] ; then
-		# show root@ when we don't have colors
-		PS1='\u@\h \W \& '
-	else
-		PS1='\h \t \w ${PS1_art}'
-	fi
+    if [[ ${EUID} == 0 ]] ; then
+        # show root@ when we don't have colors
+        PS1='\u@\h \W \& '
+    else
+        PS1='\h \t \w ${PS1_art}'
+    fi
 fi
 
 LS_COLORS='di=1;35' ; export LS_COLORS
 
 #setup ssh agent for non-root logins
 if [[ ${EUID} -ne 0 ]] ; then
-	SSH_ENV="$HOME/.ssh/environment"
+    SSH_ENV="$HOME/.ssh/environment"
 
-	function start_agent {
-    	echo "Initialising new SSH agent..."
-		/usr/bin/ssh-agent | sed 's/^echo/#echo/' > "${SSH_ENV}"
-		echo succeeded
-		chmod 600 "${SSH_ENV}"
-		 . "${SSH_ENV}" > /dev/null
-		/usr/bin/ssh-add;
-	}
+    function start_agent {
+        echo "Initialising new SSH agent..."
+        /usr/bin/ssh-agent | sed 's/^echo/#echo/' > "${SSH_ENV}"
+        echo succeeded
+        chmod 600 "${SSH_ENV}"
+         . "${SSH_ENV}" > /dev/null
+        /usr/bin/ssh-add;
+    }
 
-	# Source SSH settings, if applicable
-
-	if [ -f "${SSH_ENV}" ]; then
-		 . "${SSH_ENV}" > /dev/null
-		#ps ${SSH_AGENT_PID} doesn't work under cywgin
-		ps -ef | grep ${SSH_AGENT_PID} | grep ssh-agent$ > /dev/null || {
-			start_agent;
-		}
-	else
-		start_agent;
-	fi
+    # Source SSH settings, if applicable
+    if [ -f "${SSH_ENV}" ]; then
+         . "${SSH_ENV}" > /dev/null
+        #ps ${SSH_AGENT_PID} doesn't work under cywgin
+        ps -ef | grep ${SSH_AGENT_PID} | grep ssh-agent$ > /dev/null || {
+            start_agent;
+        }
+    else
+        start_agent;
+    fi
 fi
 
 # Invoke GnuPG-Agent the first time we login.
 if [[ ${EUID} -ne 0 ]] ; then
-	# Does `~/.gpg-agent-info' exist and points to gpg-agent process accepting signals?
-	if test -f $HOME/.gpg-agent-info && \
-		kill -0 `cut -d: -f 2 $HOME/.gpg-agent-info` 2>/dev/null; then
-		GPG_AGENT_INFO=`cat $HOME/.gpg-agent-info | cut -c 16-`
-	else
-		# No, gpg-agent not available; start gpg-agent
-		eval `gpg-agent --daemon --no-grab`
-	fi
-	export GPG_TTY=`tty`
-	export GPG_AGENT_INFO
+    # Does `~/.gpg-agent-info' exist and points to gpg-agent process accepting signals?
+    if test -f $HOME/.gpg-agent-info && \
+        kill -0 `cut -d: -f 2 $HOME/.gpg-agent-info` 2>/dev/null; then
+        GPG_AGENT_INFO=`cat $HOME/.gpg-agent-info | cut -c 16-`
+    else
+        # No, gpg-agent not available; start gpg-agent
+        eval `gpg-agent --daemon --no-grab`
+    fi
+    export GPG_TTY=`tty`
+    export GPG_AGENT_INFO
 fi
+
 #autocomplete
 complete -cf sudo
 complete -cf man
