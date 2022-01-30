@@ -134,6 +134,20 @@ function gpb() { EDITOR='code -n -w -a' $HOME/bin/git-peak-extended --temp --bra
 function gps() { EDITOR=vim $HOME/bin/git-peak-extended --save $@ && cd $(cat /tmp/git-peak-extended.tmp); }
 function gpsc() { EDITOR='code -n -w -a' $HOME/bin/git-peak-extended --save $@; }
 
+# quick Python virtualenv
+function venv() {
+    export TEMP_VENV=$(mktemp -d)
+    if [ -f ./requirements.txt ]; then
+        cp requirements.txt ${TEMP_VENV}/requirements.txt
+    fi
+    cd ${TEMP_VENV}
+    virtualenv venv
+    source venv/bin/activate
+    if [ -f ./requirements.txt ]; then
+        pip install -r requirements.txt
+    fi
+    python3
+}
 
 # misc functions
 sssh() {
