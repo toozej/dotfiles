@@ -131,7 +131,7 @@ complete -cf man
 
 # editors and paths
 EDITOR=vim
-PATH=$PATH:/sbin/:$HOME/bin/
+PATH=$PATH:/sbin/:$HOME/bin/:/usr/local/bin/
 export GOPATH=$HOME/src/go/
 export EDITOR="vim"
 
