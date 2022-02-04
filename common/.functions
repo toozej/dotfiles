@@ -136,9 +136,13 @@ function gpsc() { EDITOR='code -n -w -a' $HOME/bin/git-peak-extended --save $@; 
 
 # quick Python virtualenv
 function venv() {
-    export TEMP_VENV=$(mktemp -d)
-    if [ -f ./requirements.txt ]; then
-        cp requirements.txt ${TEMP_VENV}/requirements.txt
+    if [ -n "${1}" ]; then
+        export TEMP_VENV="${1}"
+    else
+        export TEMP_VENV=$(mktemp -d)
+        if [ -f ./requirements.txt ]; then
+            cp requirements.txt ${TEMP_VENV}/requirements.txt
+        fi
     fi
     cd ${TEMP_VENV}
     python3 -m venv venv
