@@ -73,8 +73,10 @@ if ${use_color} ; then
         PS1="\[\033[01;32m\]\h\[\033[01;34m\] \t \w\$(__git_ps1) ${PS1_art}\[\033[00m\] "
     fi
 
-    alias ls='ls --color=auto'
-    alias grep='grep --color=auto'
+    if [ "$(uname)" != "Darwin" ]; then
+        alias ls='ls --color=auto'
+        alias grep='grep --color=auto'
+    fi
 else
     if [[ ${EUID} == 0 ]] ; then
         # show root@ when we don't have colors
@@ -150,6 +152,9 @@ if [ -f ~/.aliases ]; then
 fi
 if [ -f ~/.functions ]; then
     . ~/.functions
+fi
+if [ "$(uname)" == "Darwin" ] && [ -f ~/.aliases_mac ]; then
+    . ~/.aliases_mac
 fi
 
 # docker-related/required aliases
