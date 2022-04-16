@@ -2,10 +2,7 @@
 export ZSH=$HOME/.oh-my-zsh
 
 # Path for Go
-export PATH=$PATH:/usr/local/opt/go/libexec/bin
 export GOPATH=$HOME/src/go
-# exports for GOPATH to work with Atom on OSX
-launchctl setenv GOPATH $HOME/src/go
 
 # systemD settings
 export SYSTEMD_PAGER=''
@@ -68,7 +65,8 @@ plugins=(git aws ansible docker)
 
 # User configuration
 
-export PATH="/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/Users/r634433/bin"
+export PATH="/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:$HOME/bin:$HOME/.local/bin:/usr/local/opt/go/libexec/bin"
+
 # export MANPATH="/usr/local/man:$MANPATH"
 
 source $ZSH/oh-my-zsh.sh
