@@ -10,7 +10,7 @@ do
     ln -snf $DIR/common/$item ~
 done
 echo -e "setting correct permissions on ~/.gnupg\n"
-chmod go-rx ~/.gnupg/
+chmod 0700 ~/.gnupg
 echo -e "enabling git-template dir\n"
 git config --global init.templateDir ~/.git-template
 
