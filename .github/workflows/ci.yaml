@@ -1,0 +1,48 @@
+---
+name: CI
+'on':
+  workflow_dispatch:
+  pull_request:
+  push:
+  schedule:
+    - cron: "0 2 * * 1"
+
+jobs:
+
+  check:
+    name: Check
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Check out the codebase.
+        uses: actions/checkout@v3
+
+      - name: Install check dependencies.
+        run: sudo apt-get install -y shellcheck
+
+      - name: Check code syntax.
+        run: |
+          bash -n setup.sh
+          # SC2044 - For loops over find output are fragile. Use find -exec or a while read loop.
+          shellcheck -e SC2044 setup.sh
+
+  test:
+    name: Test
+    runs-on: ubuntu-20.04
+
+    steps:
+      - name: Check out the codebase.
+        uses: actions/checkout@v3
+
+      - name: Setup
+        run: chmod +x setup.sh && ./setup.sh
+
+      - name: Run tests
+        run: |
+          echo "ensuring that symlinks for most important files are created"
+          ls -a ~/.bashrc | grep .bashrc ||  exit 1
+          ls -a ~/.vimrc | grep .vimrc ||  exit 1
+          ls -a ~/.aliases | grep .aliases ||  exit 1
+          ls -a ~/.functions | grep .functions || exit 1
+          ls -a ~/bin/ | grep jfc || exit 1
+          ls -a ~/Templates/ | grep docker-compose.yml || exit 1
+          echo "if we got to this point the test has finished successfully, exiting." && exit 0
