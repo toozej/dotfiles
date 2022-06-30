@@ -22,8 +22,9 @@ jobs:
       - name: Check code syntax.
         run: |
           bash -n setup.sh
-          # SC2044 - For loops over find output are fragile. Use find -exec or a while read loop.
-          shellcheck -e SC2044 setup.sh
+          # SC2044: For loops over find output are fragile. Use find -exec or a while read loop.
+          # SC2045: Iterating over ls output is fragile. Use globs.
+          shellcheck -e SC2044,SC2045 setup.sh
 
   test:
     name: Test
