@@ -143,7 +143,9 @@ function githubclonetoozej() {
 
 # git-peak-extended
 function gp() { EDITOR='code -n -w -a' $HOME/bin/git-peak-extended --temp $@; }
+function gpv() { EDITOR=vim $HOME/bin/git-peak-extended --temp $@; }
 function gpb() { EDITOR='code -n -w -a' $HOME/bin/git-peak-extended --temp --branch $@; }
+function gpvb() { EDITOR=vim $HOME/bin/git-peak-extended --temp --branch $@; }
 function gps() { EDITOR=vim $HOME/bin/git-peak-extended --save $@ && cd $(cat /tmp/git-peak-extended.tmp); }
 function gpsc() { EDITOR='code -n -w -a' $HOME/bin/git-peak-extended --save $@; }
 
