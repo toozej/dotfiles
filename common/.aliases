@@ -29,11 +29,8 @@ alias tacg='tac /var/log/syslog | grep -i'
 alias tg='tail -f /var/log/syslog | grep -i'
 
 ## package management
-alias sag="sudo apt "
 alias saguu="sudo apt update; sudo apt upgrade -y; sudo apt-get autoremove -y;"
-alias syu="sudo yum upgrade -y"
-alias syi="sudo yum install "
-alias sys="sudo yum search "
+alias sdu="sudo dnf upgrade -y && sudo flatpak upgrade -y"
 
 ## vim
 alias scratch="vim +startinsert ~/tmp/scratch"
