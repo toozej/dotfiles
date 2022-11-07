@@ -119,6 +119,14 @@ function gcmpa(){
     done
 }
 
+function gr(){
+    mr register
+}
+
+function gra(){
+    find . -mindepth 1 -maxdepth 1 -type d -exec mr register {} \;
+}
+
 function rebase(){
     branch_name=$1
     default_branch=`git remote show origin | grep "HEAD branch" | sed 's/.*: //'`
@@ -133,12 +141,13 @@ function rebase(){
     git push --force
 }
 
-# clone all repos from github.com/toozej into cwd
+# clone all repos from github.com/toozej into cwd and register them with myrepos
 function githubclonetoozej() {
     if [ -n "${1}" ]; then
         GITHUB_CLONE_TOOZEJ_TOKEN="${1}"
     fi
     curl -s https://${GITHUB_CLONE_TOOZEJ_TOKEN}:@api.github.com/users/toozej/repos\?per_page\=200 | jq -r '.[] | select(.archived == false)' | jq ".ssh_url" | xargs -n 1 git clone --recursive
+    find . -mindepth 1 -maxdepth 1 -type d -exec mr register {} \;
 }
 
 # git-peak-extended
@@ -146,8 +155,8 @@ function gp() { EDITOR='code -n -w -a' $HOME/bin/git-peak-extended --temp $@; }
 function gpv() { EDITOR=vim $HOME/bin/git-peak-extended --temp $@; }
 function gpb() { EDITOR='code -n -w -a' $HOME/bin/git-peak-extended --temp --branch $@; }
 function gpvb() { EDITOR=vim $HOME/bin/git-peak-extended --temp --branch $@; }
-function gps() { EDITOR=vim $HOME/bin/git-peak-extended --save $@ && cd $(cat /tmp/git-peak-extended.tmp); }
-function gpsc() { EDITOR='code -n -w -a' $HOME/bin/git-peak-extended --save $@; }
+function gps() { EDITOR=vim $HOME/bin/git-peak-extended --mr --save $@ && cd $(cat /tmp/git-peak-extended.tmp); }
+function gpsc() { EDITOR='code -n -w -a' $HOME/bin/git-peak-extended --mr --save $@; }
 
 # quick Python virtualenv
 function venv() {
