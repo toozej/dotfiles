@@ -1,71 +1,85 @@
 #!/usr/bin/env bash
 
-# import functions for "gcmpa" usage later
-source ${HOME}/.functions
-
 FILES_TO_BACKUP=""
 ADDITIONAL_FILES_TO_BACKUP=$1
 DATE=$(date +"%m_%d_%Y")
 BACKUP_PATH=${HOME}
 TAR_FILE_NAME="backup_homedir_${DATE}.tgz"
 FAILED=""
+TMP_DIR=$(mktemp -d)
 
 # read list of files to backup
-if [ -e ${HOME}/.backup_homedir_files ]; then
+if [ -e "${HOME}/.backup_homedir_files" ]; then
     while IFS="" read -r f || [ -n "$f" ]
     do
         # ensure files requested to be backed up exist
-        if [ -e ${f} ]; then
+        if [ -e "${f}" ]; then
             # add them to the list to backup
             FILES_TO_BACKUP="${FILES_TO_BACKUP} ${HOME}/${f}"
         else
             echo "${f} was requested to be backed up, but does not exist."
         fi
-    done < ~/.backup_homedir_files
+    done < "${HOME}/.backup_homedir_files"
 else
-    echo "~/.backup_homedir_files not found, exiting"
+    echo "${HOME}/.backup_homedir_files not found, exiting"
     exit 1
 fi
 
 # if a file of additional files to backup is passed as a CLI argument, append that to the list of files to backup
-if [ -e ${ADDITIONAL_FILES_TO_BACKUP} ]; then
+if [ -e "${ADDITIONAL_FILES_TO_BACKUP}" ]; then
     while IFS="" read -r f || [ -n "$f" ]
     do
         # ensure files requested to be backed up exist
-        if [ -e ${f} ]; then
+        if [ -e "${f}" ]; then
             # add them to the list to backup
             FILES_TO_BACKUP="${FILES_TO_BACKUP} ${HOME}/${f}"
         else
             echo "${f} was requested to be backed up, but does not exist."
         fi
-    done < ${ADDITIONAL_FILES_TO_BACKUP}
+    done < "${ADDITIONAL_FILES_TO_BACKUP}"
 fi
 
 # if we're backing up ~/src,
 # pull all master and main branches first
 # leaving any repos currently checked out to non-default branches alone
 if [[ "${FILES_TO_BACKUP}" == *"src"* ]]; then
-    echo "~/src selected for backup"
+    echo "${HOME}/src selected for backup"
     echo "pulling all master and main branches"
-    cd ${HOME}/src
-    gcmpa
-    cd ${HOME}
+    cd "${HOME}/src" || exit
+    # shellcheck disable=SC2044
+    for DIR in $(find . -mindepth 1 -maxdepth 3 -type f -name ".mrconfig" | sed -e "s/.mrconfig//"); do
+        echo "Updating repos managed by ${DIR}/.mrconfig"
+        cd "${DIR}" && mr update -j 5 && cd - || exit
+    done
+    cd "${HOME}" || exit
+    echo "Updating repos managed by primary ${HOME}/.mrconfig"
+    mr update -j 5
 fi
 
+# create exclusions list
+cat ${HOME}/.backup_homedir_exclusions_base >> ${TMP_DIR}/exclusions
+for dir in ${FILES_TO_BACKUP}; do
+    find ${dir} -type s -print0 | xargs -0 realpath >> ${TMP_DIR}/exclusions
+done
 
+echo "Excluding the following files:"
+cat ${TMP_DIR}/exclusions
+echo -n ""
 
 # create tar
-tar -cvzhf ${BACKUP_PATH}/${TAR_FILE_NAME} ${FILES_TO_BACKUP}
+tar --exclude-from=${TMP_DIR}/exclusions -cvzhf "${BACKUP_PATH}/${TAR_FILE_NAME}" "${FILES_TO_BACKUP}"
+# shellcheck disable=SC2181
 if [ $? -ne 0 ]; then
     FAILED="${FAILED} creating tar failed\n"
     exit 2
 fi
 
 # encrypt tar
-gpg --batch --yes --homedir ${HOME}/.gnupg --trust-model always --output ${BACKUP_PATH}/${TAR_FILE_NAME}.gpg --encrypt --recipient "james@toozej.com" ${TAR_FILE_NAME}
+gpg --batch --yes --homedir "${HOME}/.gnupg" --trust-model always --output "${BACKUP_PATH}/${TAR_FILE_NAME}.gpg" --encrypt --recipient "james@toozej.com" "${TAR_FILE_NAME}"
+# shellcheck disable=SC2181
 if [ $? -eq 0 ]; then
     echo "encrypting ${TAR_FILE_NAME} completed successfully, removing unencrypted tar file"
-    shred ${TAR_FILE_NAME} && rm -f ${TAR_FILE_NAME}
+    shred --remove "${TAR_FILE_NAME}"
     if [ $? -ne 0 ]; then
         FAILED="${FAILED} destroying ${TAR_FILE_NAME} failed\n"
         exit 3
@@ -81,4 +95,3 @@ if [ -n "${FAILED}" ]; then
 else
     echo "backup_homedir completed successfully"
 fi
-

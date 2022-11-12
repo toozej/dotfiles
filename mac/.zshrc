@@ -65,7 +65,7 @@ plugins=(git aws ansible docker)
 
 # User configuration
 
-export PATH="/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:$HOME/bin:$HOME/.local/bin:/usr/local/opt/go/libexec/bin"
+export PATH="/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:$HOME/bin:$HOME/.local/bin:/usr/local/opt/go/libexec/bin:$HOME/src/go/bin:/usr/local/opt/openjdk/bin"
 
 # export MANPATH="/usr/local/man:$MANPATH"
 
@@ -114,3 +114,9 @@ fi
 
 # increase ulimit on weird macs
 ulimit -n 2048
+
+# load environment variables
+source $HOME/bin/env_exports.sh
+
+# load gcloud shell completions
+source "/usr/local/Caskroom/google-cloud-sdk/latest/google-cloud-sdk/completion.zsh.inc"
