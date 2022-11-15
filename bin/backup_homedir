@@ -8,6 +8,11 @@ TAR_FILE_NAME="backup_homedir_${DATE}.tgz"
 FAILED=""
 TMP_DIR=$(mktemp -d)
 
+# check for external binaries needed
+command -v gpg || command -v gpg2 || echo "gpg binary needed, exiting" && exit 1
+command -v mr || echo "myrepos mr binary needed, exiting" && exit 1
+command -v pigz || echo "pigz binary needed, exiting" && exit 1
+
 # read list of files to backup
 if [ -e "${HOME}/.backup_homedir_files" ]; then
     while IFS="" read -r f || [ -n "$f" ]
@@ -39,6 +44,11 @@ if [ -e "${ADDITIONAL_FILES_TO_BACKUP}" ]; then
     done < "${ADDITIONAL_FILES_TO_BACKUP}"
 fi
 
+# remove first " " (space) from FILES_TO_BACKUP list
+FILES_TO_BACKUP="${FILES_TO_BACKUP# }"
+echo "Files to be backed up so far:"
+echo -e "${FILES_TO_BACKUP}\n"
+
 # if we're backing up ~/src,
 # pull all master and main branches first
 # leaving any repos currently checked out to non-default branches alone
@@ -49,11 +59,12 @@ if [[ "${FILES_TO_BACKUP}" == *"src"* ]]; then
     # shellcheck disable=SC2044
     for DIR in $(find . -mindepth 1 -maxdepth 3 -type f -name ".mrconfig" | sed -e "s/.mrconfig//"); do
         echo "Updating repos managed by ${DIR}/.mrconfig"
-        cd "${DIR}" && mr update -j 5 && cd - || exit
+        cd "${DIR}" && mr -j 5 update
+        cd "${HOME}/src" || exit
     done
     cd "${HOME}" || exit
     echo "Updating repos managed by primary ${HOME}/.mrconfig"
-    mr update -j 5
+    mr -j 5 update
 fi
 
 # create exclusions list
@@ -67,7 +78,8 @@ cat ${TMP_DIR}/exclusions
 echo -n ""
 
 # create tar
-tar --exclude-from=${TMP_DIR}/exclusions -cvzhf "${BACKUP_PATH}/${TAR_FILE_NAME}" "${FILES_TO_BACKUP}"
+# shellcheck disable=SC2086
+tar --exclude-from=${TMP_DIR}/exclusions --use-compress-program pigz -cvhf "${BACKUP_PATH}/${TAR_FILE_NAME}" ${FILES_TO_BACKUP}
 # shellcheck disable=SC2181
 if [ $? -ne 0 ]; then
     FAILED="${FAILED} creating tar failed\n"
@@ -75,7 +87,7 @@ if [ $? -ne 0 ]; then
 fi
 
 # encrypt tar
-gpg --batch --yes --homedir "${HOME}/.gnupg" --trust-model always --output "${BACKUP_PATH}/${TAR_FILE_NAME}.gpg" --encrypt --recipient "james@toozej.com" "${TAR_FILE_NAME}"
+gpg -z 0 --batch --yes --homedir "${HOME}/.gnupg" --trust-model always --output "${BACKUP_PATH}/${TAR_FILE_NAME}.gpg" --encrypt --recipient "james@toozej.com" "${TAR_FILE_NAME}"
 # shellcheck disable=SC2181
 if [ $? -eq 0 ]; then
     echo "encrypting ${TAR_FILE_NAME} completed successfully, removing unencrypted tar file"
