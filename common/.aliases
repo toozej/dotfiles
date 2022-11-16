@@ -53,6 +53,7 @@ alias c="clear"
 alias duh="du -h --max-depth=1 | sort -n"
 alias weather="curl http://wttr.in/portland"
 alias dropboxstatus="sudo docker exec -it dropbox /bin/bash -c \"dropbox status\""
+alias journal="cd ~/journal && ./journal && cd -"
 
 ## programming
 alias cdc="cd ~/src/github/toozej/ && ls"
