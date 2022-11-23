@@ -3,7 +3,7 @@
 FILES_TO_BACKUP=""
 ADDITIONAL_FILES_TO_BACKUP=$1
 DATE=$(date +"%m_%d_%Y")
-BACKUP_PATH=${HOME}
+BACKUP_PATH="${HOME}/Backups"
 TAR_FILE_NAME="backup_homedir_${DATE}.tgz"
 FAILED=""
 TMP_DIR=$(mktemp -d)
@@ -79,7 +79,7 @@ echo -n ""
 
 # create tar
 # shellcheck disable=SC2086
-tar --exclude-from=${TMP_DIR}/exclusions --use-compress-program pigz -cvhf "${BACKUP_PATH}/${TAR_FILE_NAME}" ${FILES_TO_BACKUP}
+tar --exclude-from=${TMP_DIR}/exclusions --use-compress-program pigz -cvhf "${TAR_FILE_NAME}" ${FILES_TO_BACKUP}
 # shellcheck disable=SC2181
 if [ $? -ne 0 ]; then
     FAILED="${FAILED} creating tar failed\n"
