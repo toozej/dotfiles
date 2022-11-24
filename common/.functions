@@ -225,6 +225,17 @@ function compressfiletype() {
     find "$1" -name "*$2" -exec 7za a -t7z -m0=lzma -mx=9 -mfb=64 -md=32m -ms=on {}.7z {} \; -exec 7za t {}.7z \; -exec rm -rf {} \;
 }
 
+# recursively find all files ending in ".$2" at the $1 path, and uncompress them using 7z.
+# TODO need to figure out how to extract to the original folder path it was in
+# if decompression works successfully, delete the original file
+function uncompressfiletype() {
+    if [[ "$1" =~ ^(-h|--help)$ ]]; then
+        echo "example: uncompressfiletype ~/Software/ .7z"
+        exit 1
+    fi
+    find "$1" -name "*$2" -exec 7z e {} -o* \; -exec rm -f {} \;
+}
+
 # make an encrypted tgz from $1
 function mkenctar() {
     FAILED=""
