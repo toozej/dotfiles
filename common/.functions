@@ -233,13 +233,22 @@ function uncompressfiletype() {
         echo "example: uncompressfiletype ~/Software/ .7z"
         exit 1
     fi
-    find "$1" -name "*$2" -exec 7z e {} -o* \; -exec rm -f {} \;
+    for f in $(find "${1}" -name "*${2}"); do
+        DIR=$(dirname ${f})
+        7z e ${f} -o${DIR}/*
+        if [ $? -ne 0 ]; then
+            echo -e "Failed extracting ${f}\n"
+        else
+            rm -f ${f}
+            echo -e "Successfully extracted ${f}\n"
+        fi
+    done
 }
 
 # make an encrypted tgz from $1
 function mkenctar() {
     FAILED=""
-       tar -czf ${1}.tgz ${1}
+    tar -czf ${1}.tgz ${1}
     if [ $? -ne 0 ]; then
         FAILED="${FAILED} tarring ${1}\n"
     fi
@@ -274,6 +283,10 @@ truecolor() {
         }
         printf "\n";
     }'
+}
+
+function cheat() {
+    curl -s "https://cheat.sh/$*" | \less -riX
 }
 
 function alertme() {
