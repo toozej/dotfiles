@@ -1,0 +1,8 @@
+alias dcps="podman-compose ps"
+alias dcd="podman-compose down"
+alias dcu="podman-compose up -d"
+alias dcub="podman-compose up -d --build"
+alias dcdu="podman-compose down && podman-compose up -d"
+alias dcdub="podman-compose down && podman-compose up -d --build"
+alias dca="podman-compose down && podman-compose pull && podman-compose up -d --build"
+alias dcl="podman-compose logs -f"

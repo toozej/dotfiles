@@ -170,6 +170,14 @@ if [ "$(which docker)" == "/usr/bin/docker" ]; then
     fi
 fi
 
+# podman related aliases for running in user-mode (non-root)
+if [ "$(which podman)" == "/usr/bin/podman" ]; then
+    # source podman aliases
+    if [ -f ~/.aliases_podman ]; then
+        . ~/.aliases_podman
+    fi
+fi
+
 # pbcopy/pbpaste aliases for non-MacOS
 if [ ! $(command -v pbcopy) ]; then
     if [ -f ~/.aliases_pbcopy ]; then
