@@ -187,6 +187,16 @@ sssh() {
     ssh -t $1 "screen -dR"
 }
 
+function journal() {
+    cd ~/journal
+    if [[ -n ${1} ]]; then
+        ./journal ${1}
+    else
+        ./journal
+    fi
+    cd -
+}
+
 # create archives out of folders
 mktar() { tar cvf  "${1%%/}.tar"     "${1%%/}/"; }
 mktgz() { tar cvzf "${1%%/}.tar.gz"  "${1%%/}/"; }
