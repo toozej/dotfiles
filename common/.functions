@@ -71,7 +71,12 @@ function pushf() {
 
 function gwip() {
     git add --all
-    git commit -a -m 'WIP' --amend --no-edit --no-verify
+    message=`git log -1 --pretty=%B | head -n 1`
+    if [[ ${message} == "WIP" ]]; then
+        git commit -a -m 'WIP' --amend --no-edit --no-verify
+    else
+        git commit -a -m 'WIP' --no-verify
+    fi
     pushf
 }
 
