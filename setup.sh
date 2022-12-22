@@ -71,6 +71,10 @@ if [ "$(uname)" == "Darwin" ]; then
     done
 
 elif [ "$(uname -s)" == "Linux" ]; then
+    if [ "$(command -v pycharm-community)" == "/usr/bin/pycharm-community" ]; then
+        ln -s /usr/bin/pycharm-community /usr/local/bin/pycharm
+    fi
+
     # if running i3-wm
     if [ "$(command -v i3)" == "/usr/bin/i3" ]; then
         echo -e "installing dotfiles for i3-wm"
