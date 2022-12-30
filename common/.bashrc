@@ -178,6 +178,12 @@ if [ "$(which podman)" == "/usr/bin/podman" ]; then
     fi
 fi
 
+# flyctl related env vars
+if [ -f "${HOME}/.fly/bin/flyctl" ]; then
+    export FLYCTL_INSTALL="/home/james/.fly"
+    export PATH="$FLYCTL_INSTALL/bin:$PATH"
+fi
+
 # pbcopy/pbpaste aliases for non-MacOS
 if [ ! $(command -v pbcopy) ]; then
     if [ -f ~/.aliases_pbcopy ]; then
