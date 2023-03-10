@@ -131,11 +131,20 @@ fi
 complete -cf sudo
 complete -cf man
 
-# editors and paths
-EDITOR=vim
+# editors
+if command -v nvim &> /dev/null; then
+    export EDITOR="nvim"
+    export VISUAL="nvim"
+    alias vim='nvim'
+else
+    export EDITOR="vim"
+    export VISUAL="vim"
+    alias vim='vim'
+fi
+
+# paths
 PATH=$PATH:/sbin/:$HOME/bin/:/usr/local/bin/:$HOME/.local/bin/:/usr/local/go/bin/:$HOME/src/go/bin/
 export GOPATH=$HOME/src/go/
-export EDITOR="vim"
 
 # git settings
 GIT_COMMITER_NAME="toozej"
