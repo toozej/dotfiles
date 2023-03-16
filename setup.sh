@@ -14,6 +14,14 @@ chmod 0700 ~/.gnupg
 echo -e "enabling git-template dir\n"
 git config --global init.templateDir ~/.git-template
 
+echo -e "installing ~/.config/ subdirectories and configs\n"
+mkdir ~/.config/
+for item in $(ls -a "${DIR}"/config/)
+do
+    echo "${item}"
+    ln -snf "${DIR}"/config/"${item}" ~/.config/
+done
+
 echo -e "installing local binaries\n"
 mkdir ~/bin
 for item in $(ls -a "${DIR}"/bin/)
