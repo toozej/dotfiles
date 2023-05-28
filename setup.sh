@@ -46,7 +46,7 @@ git clone https://github.com/toozej/vimfiles.git ~/.vim
 ln -s ~/.vim/vimrc ~/.vimrc
 # Pull most recent version of vim-plug plugin manager
 curl https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim > ~/.vim/autoload/plug.vim
-vim +PlugInstall +qall
+/usr/bin/vim +PlugInstall +qall
 
 echo -e "determining OS and distro, then installing related dotfiles\n"
 if [ "$(uname)" == "Darwin" ]; then
