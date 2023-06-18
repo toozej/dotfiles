@@ -70,6 +70,13 @@ function pushf() {
 }
 
 function gwip() {
+    branch=`git rev-parse --abbrev-ref HEAD`
+    default_branch=`git remote show origin | grep "HEAD branch" | sed 's/.*: //'`
+    if [[ $branch == $default_branch ]]; then
+        # create new WIP branch
+        git branch WIP
+        git checkout WIP
+    fi
     git add --all
     message=`git log -1 --pretty=%B | head -n 1`
     if [[ ${message} == "WIP" ]]; then
