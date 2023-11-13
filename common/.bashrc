@@ -165,6 +165,9 @@ fi
 if [ "$(uname)" == "Darwin" ] && [ -f ~/.aliases_mac ]; then
     . ~/.aliases_mac
 fi
+if [ -f ~/bin/env_exports.sh ]; then
+    . ~/bin/env_exports.sh
+fi
 
 # docker-related/required aliases
 if [ "$(which docker)" == "/usr/bin/docker" ]; then
