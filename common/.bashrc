@@ -170,7 +170,7 @@ if [ -f ~/bin/env_exports.sh ]; then
 fi
 
 # docker-related/required aliases
-if [ "$(which docker)" == "/usr/bin/docker" ]; then
+if [ "$(command -v docker)" == "/usr/bin/docker" ] && [ "$(docker info > /dev/null 2>&1)" ]; then
     # source docker aliases
     if [ -f ~/.aliases_docker ]; then
         . ~/.aliases_docker
@@ -183,7 +183,7 @@ if [ "$(which docker)" == "/usr/bin/docker" ]; then
 fi
 
 # podman related aliases for running in user-mode (non-root)
-if [ "$(which podman)" == "/usr/bin/podman" ]; then
+if [ "$(command -v podman)" == "/usr/bin/podman" ] && [ "$(podman info > /dev/null 2>&1)" ]; then
     # source podman aliases
     if [ -f ~/.aliases_podman ]; then
         . ~/.aliases_podman
