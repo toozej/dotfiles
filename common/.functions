@@ -336,6 +336,20 @@ function pingme() {
     https://hooks.slack.com/services/somelongurlgoeshere
 }
 
+function updoot() {
+    if command -v apt &> /dev/null; then
+        sudo apt-get update -qq
+        sudo apt-get upgrade -y
+        sudo apt-get autoremove -y
+    elif command -v dnf &> /dev/null; then
+        sudo dnf upgrade -y
+    fi
+
+    if command -v flatpak &> /dev/null; then
+        sudo flatpak upgrade -y
+    fi
+}
+
 # Test Kitchen
 function kc() {
     if [ -z ${1} ]; then
