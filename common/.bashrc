@@ -156,37 +156,36 @@ GIT_AUTHOR_EMAIL="toozej@gmail.com"
 export SYSTEMD_PAGER=''
 
 unset use_color safe_term match_lhs
-if [ -f ~/.aliases ]; then
-    . ~/.aliases
+if [ -f "$HOME/.aliases" ]; then
+    . "$HOME/.aliases"
 fi
-if [ -f ~/.functions ]; then
-    . ~/.functions
+if [ -f "$HOME/.functions" ]; then
+    . "$HOME/.functions"
 fi
-if [ "$(uname)" == "Darwin" ] && [ -f ~/.aliases_mac ]; then
-    . ~/.aliases_mac
+if [ "$(uname)" == "Darwin" ] && [ -f "$HOME/.aliases_mac" ]; then
+    . "$HOME/.aliases_mac"
 fi
-if [ -f ~/bin/env_exports.sh ]; then
-    . ~/bin/env_exports.sh
+if [ -f "$HOME/bin/env_exports.sh" ]; then
+    . "$HOME/bin/env_exports.sh"
 fi
 
 # docker-related/required aliases
-if [ "$(command -v docker)" == "/usr/bin/docker" ] && [ "$(docker info > /dev/null 2>&1)" ]; then
-    # source docker aliases
-    if [ -f ~/.aliases_docker ]; then
-        . ~/.aliases_docker
+if command -v docker &> /dev/null && docker info &> /dev/null; then
+    if [ -f "$HOME/.aliases_docker" ]; then
+        . "$HOME/.aliases_docker"
     fi
 
     # source kcli aliases
-    if [ -f ~/.aliases_kcli ]; then
-        . ~/.aliases_kcli
+    if [ -f "$HOME/.aliases_kcli" ]; then
+        . "$HOME/.aliases_kcli"
     fi
 fi
 
 # podman related aliases for running in user-mode (non-root)
-if [ "$(command -v podman)" == "/usr/bin/podman" ] && [ "$(podman info > /dev/null 2>&1)" ]; then
+if command -v podman &> /dev/null && podman info &> /dev/null; then
     # source podman aliases
-    if [ -f ~/.aliases_podman ]; then
-        . ~/.aliases_podman
+    if [ -f "$HOME/.aliases_podman" ]; then
+        . "$HOME/.aliases_podman"
     fi
 fi
 
@@ -197,10 +196,8 @@ if [ -f "${HOME}/.fly/bin/flyctl" ]; then
 fi
 
 # pbcopy/pbpaste aliases for non-MacOS
-if [ ! $(command -v pbcopy) ]; then
-    if [ -f ~/.aliases_pbcopy ]; then
-        . ~/.aliases_pbcopy
-    fi
+if [ "$(uname)" != "Darwin" ] && [ -f "$HOME/.aliases_pbcopy" ]; then
+    . "$HOME/.aliases_pbcopy"
 fi
 
 # elasticsearch-related aliases
