@@ -6,6 +6,25 @@ cap () { tee /tmp/capture.out; }
 # return the output of the most recent command that was captured by cap
 ret () { cat /tmp/capture.out; }
 
+# copy contents and paths of $1 filetypes to paste to gist/chat/etc.
+function pbbc() {
+    find_file_type="${1}"
+    exclude="${2}"
+
+    os=$(uname -s)
+    if [[ $os == "Linux" ]]; then
+        copier="wl-copy"
+    elif [[ $os == "Darwin" ]]; then
+        copier="pbcopy"
+    fi
+    
+    if [[ "x${exclude}" == "x" ]]; then
+        find . -type f -name "*${find_file_type}" -exec bash -c 'if ! git check-ignore -q "{}"; then echo -e "{}\n\"\"\"" && cat "{}" && echo -e "\"\"\"\n"; fi' \; | "${copier}"
+    else
+        find . -type f -name "*${find_file_type}" -not -name "*${exclude}*" -exec bash -c 'if ! git check-ignore -q "{}"; then echo -e "{}\n\"\"\"" && cat "{}" && echo -e "\"\"\"\n"; fi' \; | "${copier}"
+    fi
+}
+
 # Git and Github functions
 # determining default branch using https://stackoverflow.com/questions/28666357/git-how-to-get-default-branch/44750379#comment92366240_50056710
 
