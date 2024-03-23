@@ -178,6 +178,10 @@ function rebase(){
     git push --force
 }
 
+function recursivegitstatus(){
+    find . -mindepth 1 -maxdepth 2 -type d -name '.git' | while read dir ; do sh -c "cd $dir/../ && echo -e \"\nGIT STATUS IN ${dir//\.git/}\" && git status -s" ; done
+}
+
 # clone all repos from github.com/toozej into cwd and register them with myrepos
 function githubclonetoozej() {
     if [ -n "${1}" ]; then
