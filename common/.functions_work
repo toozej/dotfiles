@@ -10,12 +10,6 @@ function cdt() {
     fi
 }
 
-# changes directory to that of your frontmost Finder window
-function cdf() {
-    target=$(osascript -e 'tell application "Finder" to get POSIX path of (target of front Finder window as text)')
-    cd "$target"
-}
-
 function ecr-login() {
     PROFILE=$1
     REGION=$(aws configure get "${PROFILE}".region)

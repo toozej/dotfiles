@@ -9,9 +9,9 @@ FAILED=""
 TMP_DIR=$(mktemp -d)
 
 # check for external binaries needed
-command -v gpg || command -v gpg2 || echo "gpg binary needed, exiting" && exit 1
-command -v mr || echo "myrepos mr binary needed, exiting" && exit 1
-command -v pigz || echo "pigz binary needed, exiting" && exit 1
+command -v gpg || command -v gpg2 || echo "gpg binary needed, exiting"
+command -v mr || echo "myrepos mr binary needed, exiting"
+command -v pigz || echo "pigz binary needed, exiting"
 
 # read list of files to backup
 if [ -e "${HOME}/.backup_homedir_files" ]; then

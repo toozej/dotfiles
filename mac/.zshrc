@@ -65,12 +65,11 @@ plugins=(aws ansible docker)
 
 # User configuration
 
-export PATH="/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:$HOME/bin:$HOME/.local/bin:/usr/local/opt/go/libexec/bin:$HOME/src/go/bin:/usr/local/opt/openjdk/bin"
+export PATH="/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:$HOME/bin:$HOME/.local/bin:/usr/local/opt/go/libexec/bin:$HOME/src/go/bin:/usr/local/opt/openjdk/bin:/opt/homebrew/bin/:$HOME/.rd/bin:$HOME/Library/Python/3.9/bin:/opt/homebrew/opt/ruby/bin:`gem environment gemdir`/bin"
 
 # export MANPATH="/usr/local/man:$MANPATH"
 
 source $ZSH/oh-my-zsh.sh
-source /usr/local/share/zsh/site-functions/*
 
 # You may need to manually set your language environment
 # export LANG=en_US.UTF-8
@@ -100,16 +99,22 @@ source $HOME/.functions_work
 source $HOME/.aliases_mac
 source $HOME/.aliases_work
 # docker-related/required aliases
-#if [[ -f "/usr/bin/docker" ]] || [[ -f "/usr/local/bin/docker" ]]; then
-#    # source docker aliases
-#    if [ -f ~/.aliases_docker ]; then
-#        . ~/.aliases_docker
-#    fi
-#fi
+if command -v docker &> /dev/null; then
+    # source docker aliases
+    if [ -f ~/.aliases_docker ]; then
+        . ~/.aliases_docker
+    fi
+fi
 
-# Source chtf
-if [[ -f /usr/local/share/chtf/chtf.sh ]]; then
-	source "/usr/local/share/chtf/chtf.sh"
+# editors
+if command -v nvim &> /dev/null; then
+    export EDITOR="nvim"
+    export VISUAL="nvim"
+    alias vim='nvim'
+else
+    export EDITOR="vim"
+    export VISUAL="vim"
+    alias vim='vim'
 fi
 
 # increase ulimit on weird macs
@@ -119,4 +124,4 @@ ulimit -n 2048
 source $HOME/bin/env_exports.sh
 
 # load gcloud shell completions
-source "/usr/local/Caskroom/google-cloud-sdk/latest/google-cloud-sdk/completion.zsh.inc"
+source "/opt/homebrew/Caskroom/google-cloud-sdk/latest/google-cloud-sdk/completion.zsh.inc"

@@ -1,5 +1,7 @@
 alias tf='terraform'
+alias tg='terragrunt run-all'
 alias sship='ssh -A -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa -l jtooze'
 alias sshcentos='ssh -A -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa -l centos'
 alias cdg="cd ~/src/github/ && ls"
 alias f='open -a Finder ./'
+alias markserv="docker run -it --rm --name markserv -p 9000:3080 -v ${PWD}:/data thomsch98/markserv"
