@@ -52,11 +52,11 @@ echo -e "determining OS and distro, then installing related dotfiles\n"
 if [ "$(uname)" == "Darwin" ]; then
     # ensure .oh-my-zsh is installed
     if [[ ! -d "${HOME}/.oh-my-zsh" ]]; then
-        bash -c "$(curl -fsSL https://raw.githubusercontent.com/robbyrussell/oh-my-zsh/master/tools/install.sh)"
+        curl -fsSL https://raw.githubusercontent.com/robbyrussell/oh-my-zsh/master/tools/install.sh
 
         # install powerline patched fonts for use in iTerm
-        bash -c "$(git clone https://github.com/powerline/fonts.git --depth=1 ~/dotfiles/mac/fonts)"
-        bash -c "$(~/dotfiles/mac/fonts/install.sh && rm -rf ~/dotfiles/mac/fonts/)"
+        git clone https://github.com/powerline/fonts.git --depth=1 ~/dotfiles/mac/fonts
+        ~/dotfiles/mac/fonts/install.sh && rm -rf ~/dotfiles/mac/fonts/
     fi
 
     # symlink oh-my-zsh theme in place

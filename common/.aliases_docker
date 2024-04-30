@@ -22,15 +22,3 @@ alias dca="sudo docker compose down --remove-orphans && sudo docker compose pull
 alias dcl="sudo docker compose logs --tail=100 -f"
 alias dcla="sudo docker compose logs -f"
 
-# Docker functions
-dockerstats() {
-	if [ $# -eq 0 ]
-		then docker stats --no-stream;
-		else docker stats --no-stream | grep $1;
-	fi
-}
-
-dockertop() {
-	docker stats --format "table {{.Container}}\t{{.Name}}\t{{.CPUPerc}} {{.MemPerc}}\t{{.NetIO}}\t{{.BlockIO}}"
-}
-
