@@ -65,7 +65,7 @@ plugins=(aws ansible docker)
 
 # User configuration
 
-export PATH="/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:$HOME/bin:$HOME/.local/bin:/usr/local/opt/go/libexec/bin:$HOME/src/go/bin:/usr/local/opt/openjdk/bin:/opt/homebrew/bin/:$HOME/.rd/bin:$HOME/Library/Python/3.9/bin:/opt/homebrew/opt/ruby/bin:`gem environment gemdir`/bin"
+export PATH="/usr/local/opt/gnu-sed/libexec/gnubin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:$HOME/bin:$HOME/.local/bin:/usr/local/opt/go/libexec/bin:$HOME/src/go/bin:/usr/local/opt/openjdk/bin:/opt/homebrew/bin/:$HOME/.rd/bin:$HOME/Library/Python/3.9/bin:/opt/homebrew/opt/ruby/bin:`gem environment gemdir`/bin"
 
 # export MANPATH="/usr/local/man:$MANPATH"
 
