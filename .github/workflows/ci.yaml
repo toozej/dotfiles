@@ -11,10 +11,10 @@ jobs:
 
   check:
     name: Check
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     steps:
       - name: Check out the codebase.
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Install check dependencies.
         run: sudo apt-get install -y shellcheck
@@ -28,11 +28,11 @@ jobs:
 
   test:
     name: Test
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
 
     steps:
       - name: Check out the codebase.
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Setup
         run: chmod +x setup.sh && ./setup.sh
@@ -47,3 +47,11 @@ jobs:
           ls -a ~/bin/ | grep jfc || exit 1
           ls -a ~/Templates/ | grep docker-compose.yml || exit 1
           echo "if we got to this point the test has finished successfully, exiting." && exit 0
+
+  workflow-keepalive:
+    if: github.event_name == 'schedule'
+    runs-on: ubuntu-latest
+    permissions:
+      actions: write
+    steps:
+      - uses: liskin/gh-workflow-keepalive@v1
