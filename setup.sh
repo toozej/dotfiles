@@ -70,6 +70,9 @@ if [ "$(uname)" == "Darwin" ]; then
     # tell iTerm to use my default dynamic profile
     ln -sf "${DIR}"/mac/iterm_default_profile.json ~/Library/Application\ Support/iTerm2/DynamicProfiles/iterm_default_profile.json
 
+    # symlink ghostty config in place
+    ln -sf "${DIR}"/mac/ghostty_config ~/Library/Application\ Support/com.mitchellh.ghostty/config
+
     # symlink files from within ./mac/ to their correct location
     echo -e "installing dotfiles for MacOS"
     for item in $(ls -a "${DIR}"/mac/)
