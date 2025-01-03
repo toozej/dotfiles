@@ -3,6 +3,8 @@ font-size = 15
 
 shell-integration-features = sudo
 
+keybind = global:ctrl+grave_accent=toggle_quick_terminal
+
 keybind = alt+left=goto_split:left
 keybind = alt+right=goto_split:right
 
