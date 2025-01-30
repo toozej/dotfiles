@@ -106,6 +106,27 @@ function gwip() {
     pushf
 }
 
+function rebase(){
+    branch_name=$1
+    default_branch=`git remote show origin | grep "HEAD branch" | sed 's/.*: //'`
+    if [ -z $branch_name ]; then
+        branch_name=$default_branch
+    fi
+    current_branch=`git rev-parse --abbrev-ref HEAD`
+    git checkout $branch_name
+    git pull
+    git checkout $current_branch
+    git rebase -i $branch_name
+    git push --force
+}
+
+function squashbranchcommits() {
+    default_branch=`git remote show origin | grep "HEAD branch" | sed 's/.*: //'`
+    current_branch=`git rev-parse --abbrev-ref HEAD`
+    git reset --soft $(git merge-base $default_branch HEAD)
+    git commit
+}
+
 function pr(){
     default_branch=`git remote show origin | grep "HEAD branch" | sed 's/.*: //'`
     remote=`git remote -v | grep origin | head -1 | awk '{ print $2 }' | sed 's/.*:\(.*\)*/\1/' | sed 's/\.git$//'`
@@ -119,18 +140,6 @@ function pr(){
     $opener "https://github.com/$remote/compare/${1:-$default_branch}...$branch?expand=1"
 }
 
-function cci(){
-    remote=`git remote -v | grep origin | head -1 | awk '{ print $2 }' | sed 's/.*:\(.*\)*/\1/' | sed 's/\.git$//'`
-    branch=`git rev-parse --abbrev-ref HEAD`
-    os=`uname -s`
-    if [[ $os == "Linux" ]]; then
-        opener=xdg-open
-    elif [[ $os == "Darwin" ]]; then
-        opener=open
-    fi
-    $opener "https://app.circleci.com/pipelines/github/${remote}?branch=${branch}&filter=all"
-
-}
 
 function gpa() {
     for DIR in $(ls .); do cd ${DIR} && git pull && cd ../; done
@@ -162,20 +171,6 @@ function gr(){
 
 function gra(){
     find . -mindepth 1 -maxdepth 1 -type d -exec mr register {} \;
-}
-
-function rebase(){
-    branch_name=$1
-    default_branch=`git remote show origin | grep "HEAD branch" | sed 's/.*: //'`
-    if [ -z $branch_name ]; then
-        branch_name=$default_branch
-    fi
-    current_branch=`git rev-parse --abbrev-ref HEAD`
-    git checkout $branch_name
-    git pull
-    git checkout $current_branch
-    git rebase -i $branch_name
-    git push --force
 }
 
 function recursivegitstatus(){
@@ -212,6 +207,19 @@ function gppcb() { EDITOR=pycharm $HOME/bin/git-peak-extended --temp --branch $@
 function gps() { EDITOR=vim $HOME/bin/git-peak-extended --mr --save $@ && cd $(cat /tmp/git-peak-extended.tmp); }
 function gpsc() { EDITOR='code -n -w -a' $HOME/bin/git-peak-extended --mr --save $@; }
 function gpspc() { EDITOR=pycharm $HOME/bin/git-peak-extended --mr --save $@; }
+
+# CircleCI
+function cci(){
+    remote=`git remote -v | grep origin | head -1 | awk '{ print $2 }' | sed 's/.*:\(.*\)*/\1/' | sed 's/\.git$//'`
+    branch=`git rev-parse --abbrev-ref HEAD`
+    os=`uname -s`
+    if [[ $os == "Linux" ]]; then
+        opener=xdg-open
+    elif [[ $os == "Darwin" ]]; then
+        opener=open
+    fi
+    $opener "https://app.circleci.com/pipelines/github/${remote}?branch=${branch}&filter=all"
+}
 
 # quick Python virtualenv
 function venv() {
