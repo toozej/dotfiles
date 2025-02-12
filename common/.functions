@@ -127,6 +127,11 @@ function squashbranchcommits() {
     git commit
 }
 
+function trashlastcommit() {
+    git reset HEAD~1
+    git push --force
+}
+
 function pr(){
     default_branch=`git remote show origin | grep "HEAD branch" | sed 's/.*: //'`
     remote=`git remote -v | grep origin | head -1 | awk '{ print $2 }' | sed 's/.*:\(.*\)*/\1/' | sed 's/\.git$//'`
