@@ -398,6 +398,10 @@ function updoot() {
     fi
 }
 
+# files2prompt
+f2pg() { files2prompt . --ignore-gitignore --ignore "pkg/man" --ignore "pkg/version" --ignore "*_test.go" --extension ".go" --output prompt.txt && cat prompt.txt | pbcopy }
+f2ps() { files2prompt ${1} | pbcopy }
+
 # Test Kitchen
 function kc() {
     if [ -z ${1} ]; then
