@@ -402,6 +402,44 @@ function updoot() {
 f2pg() { files2prompt . --ignore-gitignore --ignore "pkg/man" --ignore "pkg/version" --ignore "*_test.go" --extension ".go" --output prompt.txt && cat prompt.txt | pbcopy }
 f2ps() { files2prompt ${1} | pbcopy }
 
+# Simplenote
+# create new note from clipboard
+snc() {
+    local note_content
+
+    # Ensure required tools are installed
+    if ! command -v sncli &>/dev/null; then
+        echo "sncli is not installed. Install it via: pip install sncli"
+        return 1
+    fi
+
+    if ! command -v op &>/dev/null; then
+        echo "1Password CLI (op) is not installed. Install it from: https://developer.1password.com/docs/cli/"
+        return 1
+    fi
+
+    # Fetch credentials from 1Password
+    export SN_USERNAME=$(op read "op://Private/Simplenote/username") || { echo "Failed to fetch SN_USERNAME from 1Password."; return 1; }
+    export SN_PASSWORD=$(op read "op://Private/Simplenote/password") || { echo "Failed to fetch SN_PASSWORD from 1Password."; return 1; }
+
+    # Ensure clipboard utilities are available
+    if command -v xclip &>/dev/null; then
+        note_content=$(xclip -selection clipboard -o)
+    elif command -v pbpaste &>/dev/null; then
+        note_content=$(pbpaste)
+    else
+        echo "Clipboard access requires xclip (Linux) or pbpaste (MacOS)."
+        return 1
+    fi
+
+    local header="Clipboard note from $(date +%m_%d_%Y) on $(hostname -f)\n\n"
+
+    # Create the note
+    echo "$header$note_content" | sncli --config=/dev/null create -
+
+    echo "New Simplenote note created."
+}
+
 # Test Kitchen
 function kc() {
     if [ -z ${1} ]; then
