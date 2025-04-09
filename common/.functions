@@ -203,15 +203,15 @@ function githubclonetoozej() {
 }
 
 # git-peak-extended
-function gp() { EDITOR='code -n -w -a' $HOME/bin/git-peak-extended --temp $@; }
-function gpv() { EDITOR=vim $HOME/bin/git-peak-extended --temp $@; }
-function gppc() { EDITOR=pycharm $HOME/bin/git-peak-extended --temp $@; }
-function gpb() { EDITOR='code -n -w -a' $HOME/bin/git-peak-extended --temp --branch $@; }
-function gpvb() { EDITOR=vim $HOME/bin/git-peak-extended --temp --branch $@; }
-function gppcb() { EDITOR=pycharm $HOME/bin/git-peak-extended --temp --branch $@; }
-function gps() { EDITOR=vim $HOME/bin/git-peak-extended --mr --save $@ && cd $(cat /tmp/git-peak-extended.tmp); }
-function gpsc() { EDITOR='code -n -w -a' $HOME/bin/git-peak-extended --mr --save $@; }
-function gpspc() { EDITOR=pycharm $HOME/bin/git-peak-extended --mr --save $@; }
+function gp() { EDITOR='code -n -w -a' $HOME/bin/git-peak-extended --temp "$@"; }
+function gpv() { EDITOR=vim $HOME/bin/git-peak-extended --temp "$@"; }
+function gppc() { EDITOR=pycharm $HOME/bin/git-peak-extended --temp "$@"; }
+function gpb() { EDITOR='code -n -w -a' $HOME/bin/git-peak-extended --temp --branch "$@"; }
+function gpvb() { EDITOR=vim $HOME/bin/git-peak-extended --temp --branch "$@"; }
+function gppcb() { EDITOR=pycharm $HOME/bin/git-peak-extended --temp --branch "$@"; }
+function gps() { EDITOR=vim $HOME/bin/git-peak-extended --mr --save "$@" && cd $(cat /tmp/git-peak-extended.tmp); }
+function gpsc() { EDITOR='code -n -w -a' $HOME/bin/git-peak-extended --mr --save "$@"; }
+function gpspc() { EDITOR=pycharm $HOME/bin/git-peak-extended --mr --save "$@"; }
 
 # CircleCI
 function cci(){
@@ -399,8 +399,13 @@ function updoot() {
 }
 
 # files2prompt
-f2pg() { files2prompt . --ignore-gitignore --ignore "pkg/man" --ignore "pkg/version" --ignore "*_test.go" --extension ".go" --output prompt.txt && cat prompt.txt | pbcopy }
-f2ps() { files2prompt ${1} | pbcopy }
+f2pg() {
+    files2prompt . --ignore-gitignore --ignore "pkg/man" --ignore "pkg/version" --ignore "*_test.go" --extension ".go" --output prompt.txt && cat prompt.txt | pbcopy
+}
+
+f2ps() {
+    files2prompt ${1} | pbcopy
+}
 
 # Simplenote
 # create new note from clipboard
