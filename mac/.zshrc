@@ -61,7 +61,7 @@ HIST_STAMPS="mm/dd/yyyy"
 # Custom plugins may be added to ~/.oh-my-zsh/custom/plugins/
 # Example format: plugins=(rails git textmate ruby lighthouse)
 # Add wisely, as too many plugins slow down shell startup.
-plugins=(aws ansible docker)
+plugins=(aws ansible kubectl)
 
 # User configuration
 
@@ -101,10 +101,11 @@ source $HOME/.aliases_work
 # docker-related/required aliases
 if command -v docker &> /dev/null; then
     # source docker aliases
-    if [ -f ~/.aliases_docker ]; then
-        . ~/.aliases_docker
+    if [ -f ~/.aliases_docker_mac ]; then
+        . ~/.aliases_docker_mac
     fi
 fi
+# eval "$(/usr/local/bin/mise activate zsh)"
 
 # editors
 if command -v nvim &> /dev/null; then
