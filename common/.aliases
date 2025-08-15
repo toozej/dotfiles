@@ -59,6 +59,7 @@ alias cdc="cd ~/src/github/toozej/ && ls"
 alias cdg="cd ~/src/github/ && ls"
 
 ### git functions and aliases
+alias rgs="recursivegitstatus"
 alias cleanbranches="git branch --merge | egrep -v '\''(^\*|master)'\'' | xargs git branch -d"
 alias gs="git status"
 alias gd="git diff"

@@ -1,0 +1,163 @@
+#!/usr/bin/env bash
+# resursivegitstatus.sh
+# Recursively show Git repo status with optional coloring, summary, and filters
+
+set -euo pipefail
+
+# Defaults
+dirty_only=false
+quiet=false
+verbose=false
+use_color=true
+start_dir="."
+maxdepth_arg=()
+positional=()
+
+# Parse arguments
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    -d|--dirty-only) dirty_only=true; shift ;;
+    -q|--quiet) quiet=true; shift ;;
+    -v|--verbose) verbose=true; shift ;;
+    --no-color) use_color=false; shift ;;
+    -h|--help)
+      printf '%s\n' "Usage: $0 [OPTIONS] [START_DIR] [MAXDEPTH]"
+      printf '%s\n' "Options:"
+      printf '%s\n' "  -d, --dirty-only    Only show dirty repositories (no CLEAN lines)"
+      printf '%s\n' "  -q, --quiet         Suppress per-repo output; print only summary"
+      printf '%s\n' "  -v, --verbose       Verbose summary (lists dirty repos at end)"
+      printf '%s\n' "  --no-color          Disable colored output"
+      printf '%s\n' "  -h, --help          Show this help"
+      exit 0 ;;
+    --) shift; while [[ $# -gt 0 ]]; do positional+=("$1"); shift; done ;;
+    -*) printf '%s\n' "Unknown option: $1" >&2; exit 2 ;;
+    *) positional+=("$1"); shift ;;
+  esac
+done
+
+# Map positional arguments
+if [[ ${#positional[@]} -ge 1 ]]; then
+  start_dir="${positional[0]}"
+fi
+if [[ ${#positional[@]} -ge 2 ]]; then
+  if [[ "${positional[1]}" =~ ^[0-9]+$ ]]; then
+    maxdepth_arg=(-mindepth 1 -maxdepth "${positional[1]}")
+  else
+    printf 'MAXDEPTH must be an integer\n' >&2
+    exit 2
+  fi
+fi
+
+# ANSI colors if enabled
+if $use_color; then
+  RESET='\033[0m'
+  BRANCH_CLEAN_COLOR='\033[32m'
+  BRANCH_DIRTY_COLOR='\033[31m'
+  CLEAN_COLOR='\033[32m'
+  DIRTY_COLOR='\033[31m'
+  MOD_COLOR_M='\033[31m'
+  MOD_COLOR_A='\033[32m'
+  MOD_COLOR_D='\033[35m'
+  MOD_COLOR_R='\033[36m'
+  MOD_COLOR_C='\033[34m'
+  MOD_COLOR_Q='\033[33m'
+  MOD_COLOR_U='\033[31m'
+  MOD_COLOR_DEFAULT='\033[33m'
+else
+  RESET='' BRANCH_CLEAN_COLOR='' BRANCH_DIRTY_COLOR=''
+  CLEAN_COLOR='' DIRTY_COLOR=''
+  MOD_COLOR_M='' MOD_COLOR_A='' MOD_COLOR_D='' MOD_COLOR_R=''
+  MOD_COLOR_C='' MOD_COLOR_Q='' MOD_COLOR_U='' MOD_COLOR_DEFAULT=''
+fi
+
+# Helper: colorize token chars
+_color_for_char() {
+  local ch="$1"
+  case "$ch" in
+    M) printf '%b' "$MOD_COLOR_M$ch$RESET" ;;
+    A) printf '%b' "$MOD_COLOR_A$ch$RESET" ;;
+    D) printf '%b' "$MOD_COLOR_D$ch$RESET" ;;
+    R) printf '%b' "$MOD_COLOR_R$ch$RESET" ;;
+    C) printf '%b' "$MOD_COLOR_C$ch$RESET" ;;
+    '?') printf '%b' "$MOD_COLOR_Q$ch$RESET" ;;
+    U) printf '%b' "$MOD_COLOR_U$ch$RESET" ;;
+    ' ') printf ' ' ;;
+    *) printf '%b' "$MOD_COLOR_DEFAULT$ch$RESET" ;;
+  esac
+}
+
+# Counters and dirty list
+total=0
+dirty_count=0
+clean_count=0
+skipped_submodules=0
+failed=0
+dirty_list=()
+
+# Main scan
+# Main scan using process substitution to preserve variables
+while IFS= read -r gitdir; do
+  repo="${gitdir%/.git}"
+  total=$((total+1))
+
+  # Skip submodules
+  if [[ -n "$(git -C "$repo" rev-parse --show-superproject-working-tree 2>/dev/null)" ]]; then
+    skipped_submodules=$((skipped_submodules+1))
+    continue
+  fi
+
+  # Branch name or short commit
+  branch="$(git -C "$repo" rev-parse --abbrev-ref HEAD 2>/dev/null || true)"
+  if [[ -z "$branch" ]]; then branch="(unknown)"; fi
+  if [[ "$branch" == "HEAD" ]]; then
+    branch="$(git -C "$repo" rev-parse --short HEAD 2>/dev/null || echo 'HEAD')"
+  fi
+
+  # Status
+  if status="$(git -C "$repo" status --porcelain=1 --untracked-files=all 2>/dev/null)"; then
+    if [[ -n "$status" ]]; then
+      dirty_count=$((dirty_count+1))
+      dirty_list+=("$repo")
+      if ! $quiet; then
+        printf '%s [%b%s%b] : %bDIRTY%b\n' \
+          "$repo" "$BRANCH_DIRTY_COLOR" "$branch" "$RESET" "$DIRTY_COLOR" "$RESET"
+        while IFS= read -r line; do
+          [[ -z "$line" ]] && continue
+          token="${line:0:2}"
+          rest="${line:3}"
+          ch0="${token:0:1}"
+          ch1="${token:1:1}"
+          colored_token="$(_color_for_char "$ch0")$(_color_for_char "$ch1")"
+          printf ' %s %s\n' "$colored_token" "$rest"
+        done <<<"$status"
+        printf '\n'
+      fi
+    else
+      clean_count=$((clean_count+1))
+      if ! $dirty_only && ! $quiet; then
+        printf '%s [%b%s%b] : %bCLEAN%b\n\n' \
+          "$repo" "$BRANCH_CLEAN_COLOR" "$branch" "$RESET" "$CLEAN_COLOR" "$RESET"
+      fi
+    fi
+  else
+    printf '%s: not a git repository or git failed\n' "$repo" >&2
+    failed=$((failed+1))
+  fi
+done < <(find "$start_dir" "${maxdepth_arg[@]}" -path "*/ARCHIVE/*" -prune -o -type d -name '.git' -print)
+
+# Summary
+if $quiet; then
+  printf 'Summary: scanned=%d, dirty=%d, clean=%d, skipped_submodules=%d, failed=%d\n' \
+    "$total" "$dirty_count" "$clean_count" "$skipped_submodules" "$failed"
+else
+  printf '\nSummary: scanned=%d, dirty=%d, clean=%d, skipped_submodules=%d, failed=%d\n' \
+    "$total" "$dirty_count" "$clean_count" "$skipped_submodules" "$failed"
+
+  if $verbose && [[ ${#dirty_list[@]} -gt 0 ]]; then
+    printf '\nDirty repositories:\n'
+    for r in "${dirty_list[@]}"; do
+      printf ' - %s\n' "$r"
+    done
+  fi
+fi
+

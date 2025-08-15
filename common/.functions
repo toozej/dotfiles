@@ -178,10 +178,6 @@ function gra(){
     find . -mindepth 1 -maxdepth 1 -type d -exec mr register {} \;
 }
 
-function recursivegitstatus(){
-    find . -mindepth 1 -maxdepth 2 -type d -name '.git' | while read dir ; do sh -c "cd $dir/../ && echo -e \"\nGIT STATUS IN ${dir//\.git/}\" && git status -s" ; done
-}
-
 # clone all repos from github.com/toozej into cwd (archived repos under ARCHIVE/) and register non-archived repos with myrepos
 function githubclonetoozej() {
     if [ -n "${1}" ]; then
