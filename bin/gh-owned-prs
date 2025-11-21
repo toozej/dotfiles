@@ -1,0 +1,301 @@
+#!/bin/zsh
+
+# gh-owned-prs: Interactively find and open GitHub PRs for a specific owner.
+#
+# Uses `gh` to fetch open pull requests for a given GitHub user or organization,
+# then uses `fzf` to provide a fuzzy-searchable, interactive list.
+#
+# Features:
+# - Fuzzy search on repository name and PR title.
+# - Rich preview panel with PR details (title, author, branches, etc.).
+# - Multi-select PRs with the TAB key.
+# - Opens selected PRs in the browser on ENTER.
+# - Caches results for 10 minutes to speed up subsequent runs.
+#
+# Example: Find a PR with a partial title match like "bump actions/checkout from".
+#   1. Run the script: ./gh-owned-prs.sh my-cool-org
+#   2. In the fzf prompt, type: bump actions/checkout from
+#   3. fzf will filter the list to PRs matching that title.
+
+set -euo pipefail
+
+# --- Configuration ---
+
+# Time-to-live for the cache in minutes.
+readonly CACHE_TTL_MINUTES=10
+readonly CACHE_DIR="${HOME}/.cache/gh-owned-prs"
+readonly REFRESH_STATE_FILE="${CACHE_DIR}/refresh_required"
+
+# --- Functions ---
+
+# Memoized function to get the default owner from 'gh' CLI.
+_default_owner=""
+get_default_owner() {
+    if [[ -z "$_default_owner" ]]; then
+        if ! _default_owner=$(gh api user --jq .login 2>/dev/null); then
+            echo "Error: Could not determine default GitHub user." >&2
+            echo "Please log in with 'gh auth login' or specify an owner." >&2
+            exit 1
+        fi
+    fi
+    echo "$_default_owner"
+}
+
+usage() {
+    cat <<EOF
+Usage: $(basename "$0") [github_owner]
+
+Interactively find and open pull requests for a specific GitHub owner.
+If 'github_owner' is not provided, it defaults to the logged-in user ('$(get_default_owner)').
+
+Arguments:
+  [github_owner]    Optional: The GitHub user or organization to search within.
+
+Flags:
+  -h, --help        Show this help message.
+
+Dependencies:
+  - gh (GitHub CLI)
+  - fzf (Command-line fuzzy finder)
+  - jq (Command-line JSON processor)
+EOF
+    exit 1
+}
+
+# Check for required command-line tools.
+check_deps() {
+    for cmd in gh fzf jq; do
+        if ! command -v "$cmd" &> /dev/null; then
+            echo "Error: Required command '$cmd' is not installed." >&2
+            echo "Please install it to continue." >&2
+            exit 1
+        fi
+    done
+}
+
+# Fetches fresh PR data from GitHub and updates the cache.
+# @param $1: The owner (user or organization).
+# @param $2: The path to the cache file.
+fetch_prs() {
+    local owner="$1"
+    local cache_file="$2"
+
+    echo "Fetching fresh PR data for '$owner'..." >&2
+
+    # Use 'gh search prs' to find all open PRs for the owner. This is more
+    # efficient than listing repos and then PRs for each repo.
+    # We explicitly exclude archived repositories by adding "archived:false" to the query.
+    local pr_json
+    if ! pr_json=$(gh search prs --owner "$owner" --state open --archived=false --limit 1000 \
+        --json number,title,url,author,createdAt,updatedAt,repository); then
+        echo "Error: Failed to fetch PRs from GitHub." >&2
+        exit 1
+    fi
+
+    # Convert the JSON array into a JSONL file (one JSON object per line)
+    # for easier stream processing later.
+    echo "$pr_json" | jq -c '.[]' > "$cache_file"
+
+    if [[ $(echo "$pr_json" | jq 'length') -ge 1000 ]]; then
+        echo "Warning: Reached GitHub's 1000 PR search limit. Some older PRs may be missing." >&2
+    fi
+}
+
+# --- Main Script ---
+
+# Scriptlet to be executed by fzf for merging PRs.
+# It merges selected PRs directly without confirmation, providing feedback on success/failure.
+readonly merge_script=$(cat <<'EOF'
+setopt noglob # Prevent globbing errors on special characters
+
+lines="$1"
+state_file="$2"
+
+if [[ -z "$lines" ]]; then
+    # This guard is in case fzf is configured to execute on empty selection.
+    echo "No PRs selected to merge." >&2
+    sleep 1
+    exit 0
+fi
+
+pr_list=$(echo "$lines" | awk -F'	' '{print "  - " $1, $2, "(" $3 ")" }')
+
+# Give the user a moment to see what will be merged and a chance to abort.
+# All output goes to stderr to avoid interfering with fzf.
+echo "The following PRs will be merged in 3 seconds:" >&2
+echo "$pr_list" >&2
+echo "(Press CTRL-C to abort)" >&2
+sleep 3
+
+merged_one=false
+echo "$lines" | while IFS= read -r line; do
+    url=$(echo "$line" | cut -f4)
+    pr_id=$(echo "$line" | awk -F'	' '{print $1, $2}')
+    if [[ -n "$url" ]]; then
+        echo "---" >&2
+        echo "Merging $pr_id..." >&2
+        # `gh` outputs to stderr on its own. We check the exit code to report status.
+        if NO_COLOR=1 gh pr merge "$url" --admin --merge --delete-branch >&2; then
+            echo "✅ Successfully merged $pr_id" >&2
+            merged_one=true
+        else
+            # `gh` will have already printed an error message.
+            echo "❌ Merge failed for $pr_id. See output above." >&2
+        fi
+    fi
+done
+
+if [[ "$merged_one" == true && -n "$state_file" ]]; then
+    mkdir -p "$(dirname "$state_file")"
+    touch "$state_file"
+fi
+
+echo "---" >&2
+echo "Merge process finished." >&2
+echo "The PR list will refresh automatically if you restart the script." >&2
+sleep 3
+EOF
+)
+
+check_deps
+
+# Handle command-line flags.
+if [[ "$#" -gt 0 ]]; then
+    case "$1" in
+        -h|--help)
+            usage
+            ;;
+        --merge-prs)
+            shift
+            local state_file_path=""
+            if [[ "$1" == "--state-file" ]]; then
+                state_file_path="$2"
+                shift 2
+            fi
+
+            if [[ "$#" -eq 0 ]]; then
+                echo "No PRs selected for merging." >&2
+                exit 1
+            fi
+            
+            lines=$(printf '%s\n' "$@")
+            
+            # Execute the merge script.
+            zsh -c "$merge_script" -- "$lines" "$state_file_path"
+            exit 0
+            ;;
+        *)
+            OWNER="$1"
+            ;;
+    esac
+else
+    OWNER=$(get_default_owner)
+fi
+
+
+readonly OWNER
+readonly CACHE_FILE="${CACHE_DIR}/${OWNER}-prs.jsonl"
+
+# Ensure the cache directory exists.
+mkdir -p "$CACHE_DIR"
+
+# Check if a refresh is required from a previous merge operation.
+if [[ -f "$REFRESH_STATE_FILE" ]]; then
+    echo "Merge detected in previous run, forcing a refresh of PR data." >&2
+    fetch_prs "$OWNER" "$CACHE_FILE"
+    rm "$REFRESH_STATE_FILE"
+# Check if the cache is fresh. If not, re-fetch.
+# `stat -f %m` is for macOS. For Linux, it would be `stat -c %Y`.
+elif [[ -f "$CACHE_FILE" ]]; then
+    last_modified=$(stat -f %m "$CACHE_FILE")
+    now=$(date +%s)
+    age_seconds=$((now - last_modified))
+
+    if (( age_seconds > CACHE_TTL_MINUTES * 60 )); then
+        echo "Cache is older than $CACHE_TTL_MINUTES minutes." >&2
+        fetch_prs "$OWNER" "$CACHE_FILE"
+    else
+        echo "Using cached data (fresh for another $(( (CACHE_TTL_MINUTES * 60 - age_seconds) / 60 )) minutes)." >&2
+    fi
+else
+    fetch_prs "$OWNER" "$CACHE_FILE"
+fi
+
+if [[ ! -s "$CACHE_FILE" ]]; then
+    echo "No open PRs found for '$OWNER'." >&2
+    exit 0
+fi
+
+# Convert the cached JSONL data to a Tab-Separated-Value (TSV) format
+# that fzf can easily parse. Each line represents one PR.
+# Columns:
+# 1: Repo Name, 2: PR Number, 3: Title, 4: URL, 5: Author,
+# 6: CreatedAt, 7: UpdatedAt
+readonly pr_data=$(jq -r '[ 
+    .repository.nameWithOwner,
+    "#" + (.number|tostring),
+    .title,
+    .url,
+    .author.login,
+    .createdAt,
+    .updatedAt
+] | @tsv' "$CACHE_FILE")
+
+# The awk script that formats the fzf preview window.
+# It receives a single TSV line from fzf's preview input.
+# We use ANSI escape codes for color and style.
+readonly preview_cmd=' 
+BEGIN { FS="\t" } 
+{ 
+    repo = $1;
+    num = $2;
+    title = $3;
+    url = $4;
+    author = $5;
+    created = $6;
+    updated = $7;
+
+    gsub("T", " ", created);
+    gsub("Z", "", created);
+    gsub("T", " ", updated);
+    gsub("Z", "", updated);
+
+    print "\033[1m" title "\033[0m\n";
+    print "\033[34m" repo " " num "\033[0m by @" author "\n";
+    print "URL:     " url;
+    print "Created: " created;
+    print "Updated: " updated;
+}
+'
+
+# Run fzf to let the user select PRs.
+# We pass the TSV data to fzf and use its options to control display and search.
+# --with-nth makes the fzf list view prettier by aligning columns.
+# --nth specifies which columns to search (repo name and title).
+readonly selected_lines=$(echo "$pr_data" | fzf \
+    --multi \
+    --ansi \
+    --delimiter='\t' \
+    --nth='1,3' \
+    --with-nth='1,2,3' \
+    --preview="echo {} | awk '$preview_cmd'" \
+    --preview-window='right:50%:wrap:border-left' \
+    --prompt="Search PRs in '$OWNER' > " \
+    --header="[TAB] Select | [ENTER] Open | [ALT-M] Merge" \
+    --bind="alt-m:execute($0 --merge-prs --state-file '$REFRESH_STATE_FILE' {+})+abort")
+
+# Exit if the user made no selection (e.g., pressed ESC).
+if [[ -z "$selected_lines" ]]; then
+    echo "No PRs selected." >&2
+    exit 0
+fi
+
+# Loop through each selected line and open the corresponding PR URL.
+echo "$selected_lines" | while read -r line; do
+    # The URL is the 4th field in our TSV format.
+    url=$(echo "$line" | cut -f4)
+    if [[ -n "$url" ]]; then
+        echo "Opening $url ..."
+        open "$url"
+    fi
+done
