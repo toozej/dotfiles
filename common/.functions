@@ -400,6 +400,12 @@ function updoot() {
     fi
 }
 
+whatsswapping() {
+    for file in /proc/*/status; do
+        awk '/VmSwap|Name/{printf $2 " " $3}END{ print ""}' $file
+    done | sort -k 2 -n -r | less
+}
+
 # files2prompt
 f2pg() {
     files2prompt . --ignore-gitignore --ignore "pkg/man" --ignore "pkg/version" --ignore "*_test.go" --extension ".go" --output prompt.txt && cat prompt.txt | pbcopy
