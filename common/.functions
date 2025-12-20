@@ -400,6 +400,46 @@ function updoot() {
     fi
 }
 
+
+function watch_cmd() {
+    local show_exit_code=false
+    local interval=2
+
+    while getopts "en:" opt; do
+        case $opt in
+            e) show_exit_code=true ;;
+            n) interval="$OPTARG" ;;
+            \?)
+                echo "Usage: watch_cmd [-e] [-n interval] command [args...]" >&2
+                echo "  -e: Show exit code after command output" >&2
+                echo "  -n: Set interval in seconds (default: 2)" >&2
+                return 1
+                ;;
+        esac
+    done
+    shift $((OPTIND -1))
+
+    if [ $# -eq 0 ]; then
+        echo "Usage: watch_cmd [-e] [-n interval] command [args...]" >&2
+        return 1
+    fi
+
+    while true; do
+        date
+        output=$("$@" 2>&1)
+        exit_code=$?
+
+        echo "$output"
+
+        if $show_exit_code; then
+            echo "Exit code: $exit_code"
+        fi
+        echo
+
+        sleep "$interval"
+    done
+}
+
 whatsswapping() {
     for file in /proc/*/status; do
         awk '/VmSwap|Name/{printf $2 " " $3}END{ print ""}' $file
