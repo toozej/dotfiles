@@ -65,3 +65,6 @@ alias gs="git status"
 alias gd="git diff"
 alias gforce="git commit -a --amend --no-edit && git push --force"
 alias gforcea="git add --all && git commit -a --amend --no-edit && git push --force"
+
+### llm
+alias geminit="cd ~/tmp/geminit/ && gemini -s && cd -"
