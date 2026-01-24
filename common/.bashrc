@@ -157,35 +157,35 @@ export SYSTEMD_PAGER=''
 
 unset use_color safe_term match_lhs
 if [ -f "$HOME/.aliases" ]; then
-    . "$HOME/.aliases"
+    source "$HOME/.aliases"
 fi
 if [ -f "$HOME/.functions" ]; then
-    . "$HOME/.functions"
+    source "$HOME/.functions"
 fi
 if [ "$(uname)" == "Darwin" ] && [ -f "$HOME/.aliases_mac" ]; then
-    . "$HOME/.aliases_mac"
+    source "$HOME/.aliases_mac"
 fi
 if [ -f "$HOME/bin/env_exports.sh" ]; then
-    . "$HOME/bin/env_exports.sh"
+    source "$HOME/bin/env_exports.sh"
 fi
 
 # docker-related/required aliases
 if command -v docker &> /dev/null && docker info &> /dev/null; then
-    if [ -f "$HOME/.aliases_docker" ]; then
-        . "$HOME/.aliases_docker"
-    fi
+    for file in $HOME/.{aliases,functions}_docker; do
+        [ -f "$file" ] && source "$file"
+    done
 
-    # source kcli aliases
-    if [ -f "$HOME/.aliases_kcli" ]; then
-        . "$HOME/.aliases_kcli"
-    fi
+    # # source kcli aliases
+    # if [ -f "$HOME/.aliases_kcli" ]; then
+    #     source "$HOME/.aliases_kcli"
+    # fi
 fi
 
 # podman related aliases for running in user-mode (non-root)
 if command -v podman &> /dev/null && podman info &> /dev/null; then
     # source podman aliases
     if [ -f "$HOME/.aliases_podman" ]; then
-        . "$HOME/.aliases_podman"
+        source "$HOME/.aliases_podman"
     fi
 fi
 
@@ -197,10 +197,10 @@ fi
 
 # pbcopy/pbpaste aliases for non-MacOS
 if [ "$(uname)" != "Darwin" ] && [ -f "$HOME/.aliases_pbcopy" ]; then
-    . "$HOME/.aliases_pbcopy"
+    source "$HOME/.aliases_pbcopy"
 fi
 
 # elasticsearch-related aliases
 #if [ -f ~/.aliases_elasticsearch ]; then
-#    . ~/.aliases_elasticsearch
+#    source ~/.aliases_elasticsearch
 #fi

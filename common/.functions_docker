@@ -1,0 +1,9 @@
+# Docker functions (command substitutions only run when invoked)
+dockerrmall() { docker stop $(docker ps -a -q); docker rm $(docker ps -a -q); }
+dockerrmexited() { docker rm $(docker ps --all -q -f status=exited); }
+dockerrminotags() { docker rmi $(docker images -a | grep '^<none>' | awk 'BEGIN { ORS=" " }; {print $3}'); }
+dockerrmidangling() { docker rmi $(docker images -f 'dangling=true' -q); }
+dockerrmiday() { docker rmi $(docker images | grep ' [months|days|weeks]* ago' | awk 'BEGIN { ORS=" " }; {print $3}'); }
+dockerrmiweek() { docker rmi $(docker images | grep ' [months|weeks]* ago' | awk 'BEGIN { ORS=" " }; {print $3}'); }
+dockerrmimonth() { docker rmi $(docker images | grep ' [months]* ago' | awk 'BEGIN { ORS=" " }; {print $3}'); }
+dockerrminotlatest() { docker rmi $(docker images | grep -v 'latest' | awk 'BEGIN { ORS=" " }; {print $3}'); }
