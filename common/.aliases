@@ -68,3 +68,4 @@ alias gforcea="git add --all && git commit -a --amend --no-edit && git push --fo
 
 ### llm
 alias geminit="cd ~/tmp/geminit/ && gemini -s && cd -"
+alias kilocodet="cd ~/tmp/kilocodet/ && kilocode && cd -"
