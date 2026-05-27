@@ -259,6 +259,35 @@ sssh() {
     ssh -t $1 "screen -dR"
 }
 
+tssh() {
+    local host="$1"
+    local session="${2:-main}"
+
+    if [[ -z "$host" ]]; then
+        echo "Usage: tssh <host> [session]"
+        return 1
+    fi
+
+    while true; do
+        echo "Connecting to $host (tmux: $session)..."
+
+        ssh -t "$host" "
+            export TERM=xterm-256color
+            tmux new-session -A -s '$session'
+        "
+
+        exit_code=$?
+
+        # Exit cleanly if SSH exited normally
+        if [[ $exit_code -eq 0 ]]; then
+            break
+        fi
+
+        echo "Disconnected. Reconnecting in 3 seconds..."
+        sleep 3
+    done
+}
+
 function journal() {
     cd ~/journal
     if [[ -n ${1} ]]; then
