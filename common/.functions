@@ -273,7 +273,14 @@ tssh() {
 
         ssh -t "$host" "
             export TERM=xterm-256color
-            tmux new-session -A -s '$session'
+            export PATH=/opt/homebrew/bin:/usr/local/bin:\$PATH
+            TMUX_BIN=\$(command -v tmux)
+
+            if [[ -z \"\$TMUX_BIN\" ]]; then
+                echo 'tmux not found on remote host'
+                exit 127
+            fi
+            exec \"\$TMUX_BIN\" new-session -A -s '$session'
         "
 
         exit_code=$?
