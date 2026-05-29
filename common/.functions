@@ -255,6 +255,13 @@ function venv() {
 }
 
 # misc functions
+
+separator() {
+    echo -e "\n\n"
+    printf "%$(tput cols)s" | tr ' ' '='
+    echo -e "\n\n"
+}
+
 sssh() {
     ssh -t $1 "screen -dR"
 }
