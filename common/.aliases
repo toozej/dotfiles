@@ -56,6 +56,7 @@ alias dropboxstatus="sudo docker exec -it dropbox /bin/bash -c \"dropbox status\
 
 ## programming
 alias cdc="cd ~/src/github/toozej/ && ls"
+alias cdm="cd ~/src/github/toozej/monogo && ls apps/"
 alias cdg="cd ~/src/github/ && ls"
 
 ### git functions and aliases
